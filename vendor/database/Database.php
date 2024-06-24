@@ -60,5 +60,4 @@ class Database
     {
         return new Database("korra.design", "provadis", "alexandros2406", "provadis_project");
     }
-
 }

@@ -11,9 +11,9 @@
         <!-- Title -->
         <title>Server Monitoring</title>
     </head>
-    <body class="!bg-[#060807]">
+    <body class="">
             <h1>
-                Hallo
+                Main Page
             </h1>
     </body>
 </html>

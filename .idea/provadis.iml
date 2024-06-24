@@ -10,5 +10,6 @@
     <orderEntry type="library" name="jetbrains-mono" level="application" />
     <orderEntry type="library" name="fontawesome" level="application" />
     <orderEntry type="library" name="fontawesome" level="application" />
+    <orderEntry type="library" name="ionicons" level="application" />
   </component>
 </module>
