@@ -1,0 +1,7 @@
+{
+  "require": {
+
+    "ext-mysqli": "*",
+    "ext-bcmath": "*"
+  }
+}
