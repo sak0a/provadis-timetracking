@@ -11,5 +11,6 @@
     <orderEntry type="library" name="fontawesome" level="application" />
     <orderEntry type="library" name="fontawesome" level="application" />
     <orderEntry type="library" name="ionicons" level="application" />
+    <orderEntry type="library" name="material-components-web" level="application" />
   </component>
 </module>
