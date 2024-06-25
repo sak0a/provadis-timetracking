@@ -1,5 +1,25 @@
 
 <?php
+    $currentTab = "dashboard";
+
+
+    if (isset($_POST['ajax']) && $_POST['ajax'] == '1') {
+        $ajaxFunction = $_POST['f'] ?? '';
+        if ($ajaxFunction == 'changeTab') {
+            $newTab = $_POST['tab'] ?? 'dashboard';
+            switch ($newTab) {
+                case "dashboard":
+                case "statistics":
+                case "projects":
+                case "employees":
+                    $currentTab = $newTab;
+                default:
+                    $currentTab = "dashboard";
+            }
+        }
+    }
+
+
 
 ?>
 
@@ -10,15 +30,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>CommerzBau</title>
-    <!-- plugins:css -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
           rel="stylesheet">
-    <!-- endinject -->
-    <!-- Plugin css for this page -->
-    <!-- End plugin css for this page -->
-    <!-- Layout styles -->
     <link rel="stylesheet" href="../assets/css/style.css">
-    <!-- End layout styles -->
     <link rel="shortcut icon" href="../assets/images/favicon.png" />
 </head>
 <body>
@@ -72,6 +86,7 @@
                 <span class="divider"></span>
                 <a href="javascript:;">Logout</a>
             </div>
+
         </div>
     </aside>
     <!-- partial -->
@@ -110,22 +125,21 @@
         <!-- partial -->
         <div class="page-wrapper mdc-toolbar-fixed-adjust">
             <main class="content-wrapper">
-
+                <?php switch ($currentTab) {
+                    case "dashboard": ?>
+                        <h1>Dashboard</h1>
+                    <?php break;
+                    case "statistics": ?>
+                        <h1>Statistiken</h1>
+                    <?php break;
+                    case "projects": ?>
+                        <h1>Projekte</h1>
+                    <?php break;
+                    case "employees": ?>
+                        <h1>Mitarbeiter</h1>
+                    <?php break; ?>
+                <?php } ?>
             </main>
-            <!-- partial:../../partials/_footer.html -->
-            <footer>
-                <div class="mdc-layout-grid">
-                    <div class="mdc-layout-grid__inner">
-                        <div class="mdc-layout-grid__cell stretch-card mdc-layout-grid__cell--span-6-desktop">
-                            <span class="text-center text-sm-left d-block d-sm-inline-block tx-14">Copyright © <a href="https://www.bootstrapdash.com/" target="_blank">bootstrapdash.com </a>2020</span>
-                        </div>
-                        <div class="mdc-layout-grid__cell stretch-card mdc-layout-grid__cell--span-6-desktop d-flex justify-content-end">
-                            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center tx-14">Free <a href="https://www.bootstrapdash.com/material-design-dashboard/" target="_blank"> material admin </a> dashboards from Bootstrapdash.com</span>
-                        </div>
-                    </div>
-                </div>
-            </footer>
-            <!-- partial -->
         </div>
     </div>
 </div>
