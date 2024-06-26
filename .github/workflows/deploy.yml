@@ -1,0 +1,32 @@
+name: Deploy PHP Project as Static Site
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4' # Specify the PHP version you need
+
+      - name: Run PHP server and capture output
+        run: |
+          sudo apt-get install -y wget
+          php -S 127.0.0.1:8000 -t . &
+          sleep 5
+          wget -r --convert-links -nH -P public --cut-dirs=1 http://127.0.0.1:8000
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GH_TOKEN }}
+          publish_dir: ./public
