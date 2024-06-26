@@ -1,52 +1,23 @@
 <?php
-use vendor\database\Database;
+include('../backend/Auth.php');
 include("../backend/database/Database.php");
 session_start();
 
-if (!isset($_SESSION['angemeldet']) || $_SESSION['angemeldet'] !== true) {
+if (!Auth::isLoggedIn()) {
     header("Location: ../login");
     exit();
 }
 
 $currentTab = "dashboard";
-$benutzerFirstName = htmlspecialchars($_SESSION['first_name']);
-$benutzerLastName = htmlspecialchars($_SESSION['last_name']);
-$benutzerEmail = htmlspecialchars($_SESSION['email']);
-$benutzerRole = htmlspecialchars($_SESSION['role']);
+
+$user = $_SESSION['user'];
 
 // Logout-Logik
-if (isset($_POST['logout'])) {
-    unset($_SESSION['angemeldet']);
-    unset($_SESSION['username']);
-    if (isset($_COOKIE['secure_user'])) {
-        setcookie('secure_user', '', time() - 3600 * 24 * 7, '/');
-        unset($_COOKIE['secure_user']);
-    }
-    session_regenerate_id(true);
-    header("Location: " . $_SERVER['PHP_SELF']);
-    exit;
-}
-
-if (isset($_POST['login']) && !empty($_POST['username'])) {
-    $_SESSION['angemeldet'] = true;
-    $_SESSION['username'] = $_POST['username'];
-    session_regenerate_id(true);
-    header("Location: " . $_SERVER['PHP_SELF']);
-    exit;
-}
-if (isset($_COOKIE['secure_user']) && $_SESSION['angemeldet'] !== true) {
-    require_once 'crypt.php';
-    if (function_exists('decryptCookie')) {
-        $userId = decryptCookie($_COOKIE['secure_user']);
-        if ($userId) {
-            $_SESSION['angemeldet'] = true;
-            $_SESSION['username'] = $userId;
-            session_regenerate_id(true);
-            header("Location: " . $_SERVER['PHP_SELF']);
-            exit;
-        }
-    }
-}
+Auth::Logout();
+// Login-Logik
+Auth::Login();
+// Session-Logik
+Auth::CheckSession();
 
 if (!isset($_SESSION['admin__current_tab'])) {
     $_SESSION['admin__current_tab'] = 'dashboard';
@@ -56,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['tab'])) {
     $_SESSION['admin__current_tab'] = $_POST['tab'];
 }
 $currentTab = $_SESSION['admin__current_tab'];
-function loadTab($tab) {
+function loadTab($tab): string{
     return match ($tab) {
         'employees' => '<h1>Employees Content</h1>',
         'projects' => '<h1>Projects Content</h1>',
@@ -141,13 +112,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ajax'])) {
                 <div class="user-info">
                     <?php if (isset($_SESSION['angemeldet']) && $_SESSION['angemeldet'] === true) {
                     ?>
-                        <div id="angemeldet_als"><?php echo $benutzerFirstName . ' ' . $benutzerLastName; ?></div>
+                        <div id="angemeldet_als"><?php echo htmlspecialchars($user['first_name']) . ' ' . htmlspecialchars($user['last_name']); ?></div>
                     <?php } else { ?>
                     <?php } ?>
                     <!-- TDOO: PHP trim email to n maximum characters -->
                     <p class="email"><?php if (isset($_SESSION['angemeldet']) && $_SESSION['angemeldet'] === true) {
                                         ?>
-                    <div id="angemeldet_als"><?php echo $benutzerEmail; ?></div><?php } else { ?>
+                    <div id="angemeldet_als"><?php echo htmlspecialchars($user['email']); ?></div><?php } else { ?>
                 <?php } ?>
                 </p>
                 </div>
@@ -183,7 +154,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ajax'])) {
                     <a href="/">Mitarbeiteransicht</a>
                     <span class="divider"></span>
                     <form method="post">
-                        <a type="submit" class="anmeldung_form" id="logout" name="logout" onclick="location.href='login.php'">Abmelden</a>
+                        <button type="submit" class="anmeldung_form" id="logout" name="logout">
+                            Abmelden
+                        </button>
                     </form>
                 </div>
 
@@ -200,7 +173,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ajax'])) {
 
                                 <?php if (isset($_SESSION['angemeldet']) && $_SESSION['angemeldet'] === true) {
                                 ?>
-                                    <div id="angemeldet_als"><?php echo $benutzerFirstName . ' ' . $benutzerLastName; ?></div>
+                                    <div id="angemeldet_als"><?php echo htmlspecialchars($user['first_name']) . ' ' . htmlspecialchars($user['last_name']); ?></div>
                                 <?php } else { ?>
                                 <?php } ?>
 
@@ -251,6 +224,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ajax'])) {
     <script src="../assets/vendors/js/vendor.bundle.base.js"></script>
     <!-- endinject -->
     <!-- Plugin js for this page-->
+    <script src="../assets/vendors/chartjs/Chart.min.js"></script>
     <!-- End plugin js for this page-->
     <!-- inject:js -->
     <script src="../assets/js/material.js"></script>
@@ -258,7 +232,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ajax'])) {
     <!-- endinject -->
     <!-- Custom js for this page-->
 <script>
-    var currentTab = "<?php echo $currentTab; ?>";
+    let currentTab = "<?php echo $currentTab; ?>";
 </script>
     <!-- End custom js for this page-->
 </body>

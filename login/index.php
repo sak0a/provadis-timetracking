@@ -1,44 +1,19 @@
 <?php
+include('../backend/Auth.php');
+
 session_start();
 
-if (isset($_SESSION['angemeldet']) && $_SESSION['angemeldet'] === true) {
+if (Auth::isLoggedIn()) {
     header("Location: ../");
     exit();
 }
 
 // Logout-Logik
-if (isset($_POST['logout'])) {
-    unset($_SESSION['angemeldet']);
-    unset($_SESSION['username']);
-    if (isset($_COOKIE['secure_user'])) {
-        setcookie('secure_user', '', time() - 3600*24*7, '/');
-        unset($_COOKIE['secure_user']);
-    }
-    session_regenerate_id(true);
-    header("Location: ".$_SERVER['PHP_SELF']);
-    exit;
-}
-
-if (isset($_POST['login']) && !empty($_POST['username'])) {
-    $_SESSION['angemeldet'] = true;
-    $_SESSION['username'] = $_POST['username'];
-    session_regenerate_id(true);
-    header("Location: " . $_SERVER['PHP_SELF']);
-    exit;
-}
-if (isset($_COOKIE['secure_user']) && $_SESSION['angemeldet'] !== true) {
-    require_once '../backend/crypt.php';
-    if (function_exists('decryptCookie')) {
-        $userId = decryptCookie($_COOKIE['secure_user']);
-        if ($userId) {
-            $_SESSION['angemeldet'] = true;
-            $_SESSION['username'] = $userId;
-            session_regenerate_id(true);
-            header("Location: " . $_SERVER['PHP_SELF']);
-            exit;
-        }
-    }
-}
+Auth::Logout();
+// Login-Logik
+Auth::Login();
+// Session-Logik
+Auth::CheckSession();
 ?>
 
 <!DOCTYPE html>
@@ -68,13 +43,13 @@ if (isset($_COOKIE['secure_user']) && $_SESSION['angemeldet'] !== true) {
                         <div class="stretch-card mdc-layout-grid__cell--span-4-desktop mdc-layout-grid__cell--span-1-tablet"></div>
                         <div class="mdc-layout-grid__cell stretch-card mdc-layout-grid__cell--span-4-desktop mdc-layout-grid__cell--span-6-tablet">
                             <div class="mdc-card">
-                                <form action="../backend/auth.php" method="post">
+                                <form action="../backend/auth_request.php" method="post">
                                     <div class="mdc-layout-grid">
                                         <div class="mdc-layout-grid__inner">
                                             <div class="mdc-layout-grid__cell stretch-card mdc-layout-grid__cell--span-12">
                                                 <div class="mdc-text-field w-100">
 
-                                                    <input class="mdc-text-field__input" id="text-field-hero-input" type="email" name="username" required>
+                                                    <input class="mdc-text-field__input" id="text-field-hero-input" type="email" name="email" required>
                                                     <div class="mdc-line-ripple"></div>
                                                     <label for="text-field-hero-input" class="mdc-floating-label">Email</label>
                                                 </div>
@@ -94,7 +69,7 @@ if (isset($_COOKIE['secure_user']) && $_SESSION['angemeldet'] !== true) {
                                             </div>
                                             <div class="mdc-layout-grid__cell stretch-card mdc-layout-grid__cell--span-12">
                                                 <button class="mdc-button mdc-button--raised w-100" type="submit">
-                                                    Log-In
+                                                    Login
                                                 </button>
                                             </div>
                                         </div>

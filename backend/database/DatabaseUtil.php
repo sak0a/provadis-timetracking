@@ -21,7 +21,7 @@ class DatabaseUtil {
     }
 
     public function getUserByEmail($email) {
-        $sql = "SELECT user_id, first_name, last_name, email, role, password_hash FROM Users WHERE email = ?";
+        $sql = "SELECT * FROM Users WHERE email = ?";
         $stmt = $this->database->prepare($sql);
         $stmt->bind_param("s", $email);
         $stmt->execute();
