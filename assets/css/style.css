@@ -28,6 +28,12 @@
   border-radius: 4px;
 }
 
+#logout{
+  vertical-align: text-top;
+  padding-left: 10px  ;
+  cursor: pointer;
+}
+
 .mdc-button::-moz-focus-inner {
   padding: 0;
   border: 0;
@@ -22081,6 +22087,7 @@ address p {
 
 .auth-page .mdc-text-field, .auth-page .mdc-text-field::before {
   background-color: transparent;
+  padding-left: 100px;
 }
 
 .auth-page .mdc-text-field .mdc-text-field__input {

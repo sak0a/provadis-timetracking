@@ -1,6 +1,6 @@
 <?php
-
-use vendor\database\Database;
+namespace backend\database;
+use mysqli;
 
 
 class DatabaseUtil {
@@ -11,11 +11,22 @@ class DatabaseUtil {
     }
 
     // CRUD-Methoden für Benutzer
-    public function userExists($username, $email) {
-        $sql = "SELECT COUNT(*) FROM Users WHERE email = ?";
+    public function userExists($email) {
+        $sql = "SELECT * FROM Users WHERE email = ?";
         $stmt = $this->database->prepare($sql);
-        $stmt->execute([$username, $email]);
-        return $stmt->fetchColumn() > 0;
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_assoc();
+    }
+
+    public function getUserByEmail($email) {
+        $sql = "SELECT user_id, first_name, last_name, email, role, password_hash FROM Users WHERE email = ?";
+        $stmt = $this->database->prepare($sql);
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_assoc();
     }
 
     // Erstellen eines Benutzers
@@ -61,7 +72,7 @@ class DatabaseUtil {
     public function getProject($project_id) {
         $sql = "SELECT * FROM Projects WHERE project_id = ?";
         $stmt = $this->database->prepare($sql);
-        $stmt->execute([$project_id]);
+        $stmt->execute([$project_id]);  
         return $stmt->fetch();
     }
 

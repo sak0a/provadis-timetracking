@@ -1,10 +1,10 @@
 <?php
 
-namespace vendor\database;
+namespace backend\database;
 
 use mysqli;
 
-include 'Filter.php';
+//include 'Filter.php';
 
 class Database
 {
