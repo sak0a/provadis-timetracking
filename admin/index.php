@@ -19,7 +19,47 @@ function loadTab($tab) {
     return match ($tab) {
         'employees' => '<h1>Employees Content</h1>',
         'projects' => '<h1>Projects Content</h1>',
-        'statistics' => '<h1>Statistics Content</h1>',
+        'statistics' =>
+        '<div class="mdc-layout-grid">
+            <div class="mdc-layout-grid__inner">
+              <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop">
+                <div class="mdc-card">
+                  <h6 class="card-title">Line chart</h6>
+                  <canvas id="lineChart"></canvas>
+                </div>
+              </div>
+              <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop">
+                <div class="mdc-card">
+                  <h6 class="card-title">Bar chart</h6>
+                  <canvas id="barChart"></canvas>
+                </div>
+              </div>
+              <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop">
+                <div class="mdc-card">
+                  <h6 class="card-title">Area chart</h6>
+                  <canvas id="areaChart"></canvas>
+                </div>
+              </div>
+              <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop">
+                <div class="mdc-card">
+                  <h6 class="card-title">Doughnut chart</h6>
+                  <canvas id="doughnutChart"></canvas>
+                </div>
+              </div>
+              <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop">
+                <div class="mdc-card">
+                  <h6 class="card-title">Pie chart</h6>
+                  <canvas id="pieChart"></canvas>
+                </div>
+              </div>
+              <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop">
+                <div class="mdc-card">
+                  <h6 class="card-title">Scatter chart</h6>
+                  <canvas id="scatterChart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>',
         default => '<h1>Dashboard Content</h1>',
     };
 }
@@ -45,9 +85,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ajax'])) {
     <link rel="shortcut icon" href="../assets/images/favicon.png" />
 </head>
 <body>
-<script src="../assets/js/admin.js"></script>
-<script src="../assets/js/preloader.js"></script>
 
+<script src="../assets/js/preloader.js"></script>
+<script src="../assets/js/admin.js"></script>
 
 
 
@@ -147,14 +187,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ajax'])) {
 
 <!-- plugins:js -->
 <script src="../assets/vendors/js/vendor.bundle.base.js"></script>
+
 <!-- endinject -->
 <!-- Plugin js for this page-->
+<script src="../assets/vendors/chartjs/Chart.min.js"></script>
 <!-- End plugin js for this page-->
 <!-- inject:js -->
 <script src="../assets/js/material.js"></script>
 <script src="../assets/js/misc.js"></script>
+
 <!-- endinject -->
 <!-- Custom js for this page-->
+<script>
+    var currentTab = "<?php echo $currentTab; ?>";
+</script>
+
 <!-- End custom js for this page-->
 </body>
 </html>
