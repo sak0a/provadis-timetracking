@@ -4,7 +4,7 @@ include("../backend/database/Database.php");
 session_start();
 
 if (!isset($_SESSION['angemeldet']) || $_SESSION['angemeldet'] !== true) {
-    header("Location: login.php");
+    header("Location: ../login");
     exit();
 }
 
@@ -13,25 +13,6 @@ $benutzerFirstName = htmlspecialchars($_SESSION['first_name']);
 $benutzerLastName = htmlspecialchars($_SESSION['last_name']);
 $benutzerEmail = htmlspecialchars($_SESSION['email']);
 $benutzerRole = htmlspecialchars($_SESSION['role']);
-
-
-if (isset($_POST['ajax']) && $_POST['ajax'] == '1') {
-    $ajaxFunction = $_POST['f'] ?? '';
-    if ($ajaxFunction == 'changeTab') {
-        $newTab = $_POST['tab'] ?? 'dashboard';
-        switch ($newTab) {
-            case "dashboard":
-            case "statistics":
-            case "projects":
-            case "employees":
-                $currentTab = $newTab;
-            default:
-                $currentTab = "dashboard";
-        }
-    }
-}
-
-
 
 // Logout-Logik
 if (isset($_POST['logout'])) {

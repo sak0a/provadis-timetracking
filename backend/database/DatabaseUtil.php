@@ -12,7 +12,7 @@ class DatabaseUtil {
 
     // CRUD-Methoden für Benutzer
     public function userExists($email) {
-        $sql = "SELECT * FROM Users WHERE email = ?";
+        $sql = "SELECT email FROM Users WHERE email = ?";
         $stmt = $this->database->prepare($sql);
         $stmt->bind_param("s", $email);
         $stmt->execute();
