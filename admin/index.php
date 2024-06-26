@@ -1,25 +1,34 @@
 
 <?php
-    $currentTab = "dashboard";
+use vendor\database\Database;
+include("../backend/database/Database.php");
 
+session_start();
 
-    if (isset($_POST['ajax']) && $_POST['ajax'] == '1') {
-        $ajaxFunction = $_POST['f'] ?? '';
-        if ($ajaxFunction == 'changeTab') {
-            $newTab = $_POST['tab'] ?? 'dashboard';
-            switch ($newTab) {
-                case "dashboard":
-                case "statistics":
-                case "projects":
-                case "employees":
-                    $currentTab = $newTab;
-                default:
-                    $currentTab = "dashboard";
-            }
-        }
-    }
+$currentTab = "dashboard";
 
-
+if (!isset($_SESSION['admin__current_tab'])) {
+    $_SESSION['admin__current_tab'] = 'dashboard';
+}
+// Update tab if a POST request is made
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['tab'])) {
+    $_SESSION['admin__current_tab'] = $_POST['tab'];
+}
+$currentTab = $_SESSION['admin__current_tab'];
+function loadTab($tab) {
+    return match ($tab) {
+        'employees' => '<h1>Employees Content</h1>',
+        'projects' => '<h1>Projects Content</h1>',
+        'statistics' => '<h1>Statistics Content</h1>',
+        default => '<h1>Dashboard Content</h1>',
+    };
+}
+$tabContent = loadTab($currentTab);
+// If this is an AJAX request, only return the content part
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ajax'])) {
+    echo $tabContent;
+    exit;
+}
 
 ?>
 
@@ -36,6 +45,7 @@
     <link rel="shortcut icon" href="../assets/images/favicon.png" />
 </head>
 <body>
+<script src="../assets/js/admin.js"></script>
 <script src="../assets/js/preloader.js"></script>
 
 
@@ -56,25 +66,25 @@
             <div class="mdc-list-group">
                 <nav class="mdc-list mdc-drawer-menu">
                     <div class="mdc-list-item mdc-drawer-item">
-                        <a class="mdc-drawer-link" href="">
+                        <a class="mdc-drawer-link" onclick="switchContentTo('dashboard')">
                             <i class="material-icons mdc-list-item__start-detail mdc-drawer-item-icon" aria-hidden="true">home</i>
                             Dashboard
                         </a>
                     </div>
                     <div class="mdc-list-item mdc-drawer-item">
-                        <a class="mdc-drawer-link" href="#projekte">
+                        <a class="mdc-drawer-link" onclick="switchContentTo('projects')">
                             <i class="material-icons mdc-list-item__start-detail mdc-drawer-item-icon" aria-hidden="true">grid_on</i>
                             Projekte
                         </a>
                     </div>
                     <div class="mdc-list-item mdc-drawer-item">
-                        <a class="mdc-drawer-link" href="#mitarbeiter">
+                        <a class="mdc-drawer-link" onclick="switchContentTo('employees')">
                             <i class="material-icons mdc-list-item__start-detail mdc-drawer-item-icon" aria-hidden="true">person</i>
                             Mitarbeiter
                         </a>
                     </div>
                     <div class="mdc-list-item mdc-drawer-item">
-                        <a class="mdc-drawer-link" href="#statistiken">
+                        <a class="mdc-drawer-link" onclick="switchContentTo('statistics')">
                             <i class="material-icons mdc-list-item__start-detail mdc-drawer-item-icon" aria-hidden="true">pie_chart_outlined</i>
                             Statistiken
                         </a>
@@ -124,21 +134,8 @@
         </header>
         <!-- partial -->
         <div class="page-wrapper mdc-toolbar-fixed-adjust">
-            <main class="content-wrapper">
-                <?php switch ($currentTab) {
-                    case "dashboard": ?>
-                        <h1>Dashboard</h1>
-                    <?php break;
-                    case "statistics": ?>
-                        <h1>Statistiken</h1>
-                    <?php break;
-                    case "projects": ?>
-                        <h1>Projekte</h1>
-                    <?php break;
-                    case "employees": ?>
-                        <h1>Mitarbeiter</h1>
-                    <?php break; ?>
-                <?php } ?>
+            <main class="content-wrapper" id="main">
+                <?php echo $tabContent; ?>
             </main>
         </div>
     </div>
