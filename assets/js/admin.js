@@ -23,7 +23,7 @@ function loadDynamicScripts(tab) {
         case 'statistics':
             let script = document.createElement('script');
             script.className = 'dynamic-script';
-            script.src = '../../assets/js/chartjs.js'; // Assuming the JS file is named after the tab
+            script.src = '../assets/js/chartjs.js'; // Assuming the JS file is named after the tab
             document.body.appendChild(script);
             break;
         default:

@@ -32,7 +32,7 @@ class Auth
     public static function CheckSession()
     {
         if (isset($_COOKIE['secure_user']) && $_SESSION['angemeldet'] !== true) {
-            require_once '../backend/crypt.php';
+            require_once '/crypt.php';
             if (function_exists('decryptCookie')) {
                 $userId = decryptCookie($_COOKIE['secure_user']);
                 if ($userId) {

@@ -30,11 +30,11 @@ class DatabaseUtil {
     }
 
     // Erstellen eines Benutzers
-    public function createUser($firstName, $lastName, $email, $password, $role) {
+    public function createUser($personal_number, $email, $firstName, $lastName, $birthdate, $password, $role, $entry_date) {
         $passwordHash = password_hash($password, PASSWORD_BCRYPT);
-        $sql = "INSERT INTO Users (first_name, last_name, email, password_hash, role) VALUES (?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO Users (personal_number, email, first_name, last_name, birthdate, password_hash, role_id, entry_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $this->database->prepare($sql);
-        return $stmt->execute([$firstName, $lastName, $email, $passwordHash, $role]);
+        return $stmt->execute([$personal_number, $email, $firstName, $lastName, $birthdate, $passwordHash, $role, $entry_date]);
     }
 
     // Abrufen eines Benutzers
@@ -61,11 +61,19 @@ class DatabaseUtil {
 
     // CRUD-Methoden für Projekte
 
-    // Erstellen eines Projekts
-    public function createProject($project_name, $project_manager_id, $start_date, $end_date, $status) {
-        $sql = "INSERT INTO Projects (project_name, project_manager_id, start_date, end_date, status) VALUES (?, ?, ?, ?, ?)";
+    public function projectExists($project_name) {
+        $sql = "SELECT project_name FROM Projects WHERE project_name = ?";
         $stmt = $this->database->prepare($sql);
-        return $stmt->execute([$project_name, $project_manager_id, $start_date, $end_date, $status]);
+        $stmt->bind_param("s", $project_name);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_assoc();
+    }
+    // Erstellen eines Projekts
+    public function createProject($project_name, $start_date, $status_id) {
+        $sql = "INSERT INTO Projects (project_name, start_date, status_id) VALUES (?, ?, ?)";
+        $stmt = $this->database->prepare($sql);
+        return $stmt->execute([$project_name, $start_date, $status_id]);
     }
 
     // Abrufen eines Projekts
@@ -75,12 +83,22 @@ class DatabaseUtil {
         $stmt->execute([$project_id]);  
         return $stmt->fetch();
     }
-
-    // Bearbeiten eines Projekts
-    public function updateProject($project_id, $project_name, $start_date, $end_date, $status) {
-        $sql = "UPDATE Projects SET project_name = ?, start_date = ?, end_date = ?, status = ? WHERE project_id = ?";
+    public function getAllProjects() {
+        $sql = "SELECT * FROM Projects";
         $stmt = $this->database->prepare($sql);
-        return $stmt->execute([$project_name, $start_date, $end_date, $status, $project_id]);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $projects = [];
+        while ($row = $result->fetch_assoc()) {
+            $projects[] = $row;
+        }
+        return $projects;
+    }   
+    // Bearbeiten eines Projekts
+    public function updateProject($project_id, $project_name, $start_date, $end_date, $status_id) {
+        $sql = "UPDATE Projects SET project_name = ?, start_date = ?, end_date = ?, status_id = ? WHERE project_id = ?";
+        $stmt = $this->database->prepare($sql);
+        return $stmt->execute([$project_name, $start_date, $end_date, $status_id, $project_id]);
     }
 
     // Löschen eines Projekts

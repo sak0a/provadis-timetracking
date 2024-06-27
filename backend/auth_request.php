@@ -36,15 +36,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             setcookie('secure_user', $encryptedCookie, time() + 3600 * 24 * 7, '/', '', true, true);
 
             header("Location: ../");
+            echo 'alles geklappt';
             exit();
         } else {
             $_SESSION['error'] = "Falsches Passwort.";
             header("Location: ../login");
+            echo 'Falsches Passwort';
             exit();
         }
     } else {
         $_SESSION['error'] = "Benutzer nicht gefunden.";
-        header("Location: ../login");
+        //header("Location: ../login");
+        echo 'Benutzer nicht gefunden.';
         exit();
     }
 }
