@@ -31,9 +31,12 @@ class DatabaseUtil {
 
     // Erstellen eines Benutzers
     public function createUser($personal_number, $email, $firstName, $lastName, $birthdate, $password, $role, $entry_date) {
+    public function createUser($personal_number, $email, $firstName, $lastName, $birthdate, $password, $role, $entry_date) {
         $passwordHash = password_hash($password, PASSWORD_BCRYPT);
         $sql = "INSERT INTO Users (personal_number, email, first_name, last_name, birthdate, password_hash, role_id, entry_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO Users (personal_number, email, first_name, last_name, birthdate, password_hash, role_id, entry_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $this->database->prepare($sql);
+        return $stmt->execute([$personal_number, $email, $firstName, $lastName, $birthdate, $passwordHash, $role, $entry_date]);
         return $stmt->execute([$personal_number, $email, $firstName, $lastName, $birthdate, $passwordHash, $role, $entry_date]);
     }
 
@@ -146,10 +149,21 @@ class DatabaseUtil {
         $result = $stmt->get_result();
         return $result->fetch_assoc();
     }
+    public function projectExists($project_name) {
+        $sql = "SELECT project_name FROM Projects WHERE project_name = ?";
+        $stmt = $this->database->prepare($sql);
+        $stmt->bind_param("s", $project_name);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_assoc();
+    }
     // Erstellen eines Projekts
     public function createProject($project_name, $start_date, $status_id) {
         $sql = "INSERT INTO Projects (project_name, start_date, status_id) VALUES (?, ?, ?)";
+    public function createProject($project_name, $start_date, $status_id) {
+        $sql = "INSERT INTO Projects (project_name, start_date, status_id) VALUES (?, ?, ?)";
         $stmt = $this->database->prepare($sql);
+        return $stmt->execute([$project_name, $start_date, $status_id]);
         return $stmt->execute([$project_name, $start_date, $status_id]);
     }
 
@@ -203,7 +217,10 @@ class DatabaseUtil {
     // Bearbeiten eines Projekts
     public function updateProject($project_id, $project_name, $start_date, $end_date, $status_id) {
         $sql = "UPDATE Projects SET project_name = ?, start_date = ?, end_date = ?, status_id = ? WHERE project_id = ?";
+    public function updateProject($project_id, $project_name, $start_date, $end_date, $status_id) {
+        $sql = "UPDATE Projects SET project_name = ?, start_date = ?, end_date = ?, status_id = ? WHERE project_id = ?";
         $stmt = $this->database->prepare($sql);
+        return $stmt->execute([$project_name, $start_date, $end_date, $status_id, $project_id]);
         return $stmt->execute([$project_name, $start_date, $end_date, $status_id, $project_id]);
     }
 
