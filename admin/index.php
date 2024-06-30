@@ -3,6 +3,9 @@ include('../backend/Auth.php');
 include("../backend/database/Database.php");
 session_start();
 
+
+Auth::CheckSession();
+
 if (!Auth::isLoggedIn()) {
     header("Location: ../login");
     exit();
@@ -11,13 +14,19 @@ if (!Auth::isLoggedIn()) {
 $currentTab = "dashboard";
 
 $user = $_SESSION['user'];
+$benutzerFirstName = htmlspecialchars($user['first_name']);
+$benutzerLastName = htmlspecialchars($user['last_name']);
+$benutzerEmail = htmlspecialchars($user['email']);
+$benutzerRole = htmlspecialchars($user['role_id']);
+if ($benutzerRole==='1'){$benutzerRole='Projektverantwortlicher';}
+else{$benutzerRole= 'Mitarbeiter';}
+
+
 
 // Logout-Logik
 Auth::Logout();
 // Login-Logik
 Auth::Login();
-// Session-Logik
-Auth::CheckSession();
 
 if (!isset($_SESSION['admin__current_tab'])) {
     $_SESSION['admin__current_tab'] = 'dashboard';
@@ -28,52 +37,35 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['tab'])) {
 }
 $currentTab = $_SESSION['admin__current_tab'];
 function loadTab($tab): string{
-    return match ($tab) {
-        'employees' => '<h1>Employees Content</h1>',
-        'projects' => '<h1>Projects Content</h1>',
-        'statistics' =>
-        '<div class="mdc-layout-grid">
-            <div class="mdc-layout-grid__inner">
-              <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop">
-                <div class="mdc-card">
-                  <h6 class="card-title">Line chart</h6>
-                  <canvas id="lineChart"></canvas>
-                </div>
-              </div>
-              <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop">
-                <div class="mdc-card">
-                  <h6 class="card-title">Bar chart</h6>
-                  <canvas id="barChart"></canvas>
-                </div>
-              </div>
-              <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop">
-                <div class="mdc-card">
-                  <h6 class="card-title">Area chart</h6>
-                  <canvas id="areaChart"></canvas>
-                </div>
-              </div>
-              <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop">
-                <div class="mdc-card">
-                  <h6 class="card-title">Doughnut chart</h6>
-                  <canvas id="doughnutChart"></canvas>
-                </div>
-              </div>
-              <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop">
-                <div class="mdc-card">
-                  <h6 class="card-title">Pie chart</h6>
-                  <canvas id="pieChart"></canvas>
-                </div>
-              </div>
-              <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop">
-                <div class="mdc-card">
-                  <h6 class="card-title">Scatter chart</h6>
-                  <canvas id="scatterChart"></canvas>
-                </div>
-              </div>
-            </div>
-          </div>',
-        default => '<h1>Dashboard Content</h1>',
-    };
+
+    if ($tab === 'employees') {
+        $content = file_get_contents('employees.php');
+        ob_start();
+        eval('?>' . $content);
+        $content = ob_get_clean();
+        return $content;
+    }
+    if ($tab === 'projects') {
+        $content = file_get_contents('projects.php');
+        ob_start();
+        eval('?>' . $content);
+        $content = ob_get_clean();
+        return $content;
+    }
+    if ($tab === 'dashboard') {
+        $content = file_get_contents('dashboard.php');
+        ob_start();
+        eval('?>' . $content);
+        $content = ob_get_clean();
+        return $content;
+    }
+    if ($tab === 'statistics') {
+        $content = file_get_contents('statistics.php');
+        ob_start();
+        eval('?>' . $content);
+        $content = ob_get_clean();
+        return $content;
+    }
 }
 $tabContent = loadTab($currentTab);
 // If this is an AJAX request, only return the content part
@@ -110,17 +102,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ajax'])) {
             </div>
             <div class="mdc-drawer__content">
                 <div class="user-info">
-                    <?php if (isset($_SESSION['angemeldet']) && $_SESSION['angemeldet'] === true) {
+                <?php if (isset($_SESSION['angemeldet']) && $_SESSION['angemeldet'] === true) {
                     ?>
-                        <div id="angemeldet_als"><?php echo htmlspecialchars($user['first_name']) . ' ' . htmlspecialchars($user['last_name']); ?></div>
+                        <p><?php echo $benutzerFirstName . ' ' . $benutzerLastName; ?></p>
+                        <p><?php echo $benutzerEmail; ?></p>
+                        <p><?php echo $benutzerRole; ?></p>
+
                     <?php } else { ?>
                     <?php } ?>
                     <!-- TDOO: PHP trim email to n maximum characters -->
-                    <p class="email"><?php if (isset($_SESSION['angemeldet']) && $_SESSION['angemeldet'] === true) {
-                                        ?>
-                    <div id="angemeldet_als"><?php echo htmlspecialchars($user['email']); ?></div><?php } else { ?>
-                <?php } ?>
-                </p>
+                    
                 </div>
                 <div class="mdc-list-group">
                     <nav class="mdc-list mdc-drawer-menu">
@@ -169,15 +160,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ajax'])) {
                 <div class="mdc-top-app-bar__row">
                     <div class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
                         <span class="mdc-top-app-bar__title">
-                            <div id="angemeldet_als">
-
-                                <?php if (isset($_SESSION['angemeldet']) && $_SESSION['angemeldet'] === true) {
+                        <?php if (isset($_SESSION['angemeldet']) && $_SESSION['angemeldet'] === true) {
                                 ?>
-                                    <div id="angemeldet_als"><?php echo htmlspecialchars($user['first_name']) . ' ' . htmlspecialchars($user['last_name']); ?></div>
+                                    <p><?php echo $benutzerFirstName . ' ' . $benutzerLastName; ?></p>
                                 <?php } else { ?>
                                 <?php } ?>
-
-                            </div>
                         </span>
                         <div class="mdc-text-field mdc-text-field--outlined mdc-text-field--with-leading-icon search-text-field d-none d-md-flex">
                             <i class="material-icons mdc-text-field__icon">search</i>
