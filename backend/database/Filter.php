@@ -1,6 +1,6 @@
 <?php
 
-namespace vendor\database;
+namespace backend\database;
 
 
 use Exception;
