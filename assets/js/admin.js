@@ -48,6 +48,15 @@ function createDynamicScript(src) {
     document.head.appendChild(script);
 }
 
+}
+
+function createDynamicScript(src) {
+    let script = document.createElement('script');
+    script.className = 'dynamic-script';
+    script.src = src;
+    document.head.appendChild(script);
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     loadDynamicScripts(currentTab);
 });
