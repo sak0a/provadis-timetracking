@@ -1,0 +1,21 @@
+{
+  "name": "provadis",
+  "version": "1.0.0",
+  "description": "Zeitmanagement SystemF",
+  "main": "index.js",
+  "scripts": {
+    "build:css": "postcss assets/css/admin.css -o assets/css/build/admin.css"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "autoprefixer": "^10.4.19",
+    "postcss": "^8.4.38",
+    "postcss-cli": "^11.0.0",
+    "tailwindcss": "^3.4.4"
+  },
+  "devDependencies": {
+    "sass": "^1.77.6"
+  }
+}
