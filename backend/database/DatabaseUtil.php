@@ -227,6 +227,18 @@ class DatabaseUtil
         $stmt->execute([$user_id]);
         return $stmt->fetch();
     }
+    
+    public function getAllUsers() {
+        $sql = "SELECT * FROM Users";
+        $stmt = $this->database->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $users = [];
+        while ($row = $result->fetch_assoc()) {
+            $users[] = $row;
+        }
+        return $users;
+    }  
 
     // Bearbeiten eines Benutzers
     public function updateUser($user_id, $firstName, $lastName, $email, $role)
