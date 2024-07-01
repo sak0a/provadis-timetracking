@@ -91,6 +91,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ajax'])) {
 <body>
     <script src="../assets/js/preloader.js"></script>
     <script src="../assets/js/admin.js"></script>
+    <script src="../assets/js/Chart.min.js"></script>
+    <script src="../assets/js/chartjs.js"></script>
+    <script src="../assets/js/vendor.bundle.base.js"></script>
 
 
 
@@ -208,14 +211,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ajax'])) {
 
 
     <!-- plugins:js -->
-    <script src="../assets/vendors/js/vendor.bundle.base.js"></script>
+    <!-- <script src="../assets/vendors/js/vendor.bundle.base.js"></script> -->
     <!-- endinject -->
     <!-- Plugin js for this page-->
-    <script src="../assets/vendors/chartjs/Chart.min.js"></script>
+    <!-- <script src="../assets/vendors/chartjs/Chart.min.js"></script> -->
     <!-- End plugin js for this page-->
     <!-- inject:js -->
-    <script src="../assets/js/material.js"></script>
-    <script src="../assets/js/misc.js"></script>
+    <!-- <script src="../assets/js/material.js"></script>
+    <script src="../assets/js/misc.js"></script> -->
     <!-- endinject -->
     <!-- Custom js for this page-->
 <script>
