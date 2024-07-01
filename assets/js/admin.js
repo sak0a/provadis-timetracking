@@ -48,7 +48,6 @@ function createDynamicScript(src) {
     document.head.appendChild(script);
 }
 
-}
 
 function createDynamicScript(src) {
     let script = document.createElement('script');
@@ -62,4 +61,11 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 function closeModal() {
     document.getElementById('moreDetails').style.display = 'none';
+    
 }
+function closeModalByExit() {document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        closeModal();
+    }
+});} 
+closeModalByExit();

@@ -149,11 +149,37 @@ function showUserDetails(event, userId) {
             } else {
                 let detailsDiv = document.getElementById('userDetailsContent');
                 detailsDiv.innerHTML = `
+   <style>
+    details summary {
+            list-style: none;
+            cursor: pointer;
+            outline: none;
+            display: flex;
+            align-items: center;
+        }
 
+        details summary::-webkit-details-marker {
+            display: none;
+        }
 
-                
-<h2>Benutzerdetails für ${data.user.first_name} ${data.user.last_name}</h2>
-    <table class="details-table">
+        details summary::before {
+            content: "➤"; 
+            display: inline-block;
+            margin-right: 10px;
+            margin-top: -10px;
+            transform: rotate(0deg);
+            transition: transform 0.3s ease;
+            color: #c3a72d;
+            font-size: 25px;
+        }
+
+        /* Drehung des Symbols beim Öffnen */
+        details[open] summary::before {
+            transform: rotate(90deg); /* Dreht das Symbol */
+        }</style>
+    <br>
+    <details><summary><h2>Benutzerdetails für ${data.user.first_name} ${data.user.last_name}</h2></summary>
+    <p><table class="details-table">
         <tr>
             <th>Attribut</th>
             <th>Wert</th>
@@ -178,8 +204,11 @@ function showUserDetails(event, userId) {
             <td>Rolle</td>
             <td>${data.user.role_id}</td>
         </tr>
-    </table>
-                    <h3>Arbeitsstunden</h3>
+    </table></p></details>
+
+        <details>
+        <summary> 
+                    <h3>Arbeitsstunden</h3></summary><p>
     <table class="details-table">
         <tr>
             <th>Zeitraum</th>
@@ -202,8 +231,8 @@ function showUserDetails(event, userId) {
             <td>Gesamte Stunden gearbeitet</td>
             <td>${data.hours.total_hours_worked}</td>
         </tr>
-    </table>
-    <h3>Allgemeine Arbeit</h3>
+    </table></p></details><details><summary>
+    <h3>Allgemeine Arbeit</h3></summary><p>
                     <table class="details-table">
                             <tr>
             <th>Zeitraum</th>
@@ -225,8 +254,8 @@ function showUserDetails(event, userId) {
             <td>Stunden Insgesamt</td>
             <td>${data.general_hours.total_hours_allg_Arbeit}</td>
         </tr>
-    </table>
-<h3>Abwesenheiten</h3>
+    </table></p></details><details><summary>
+<h3>Abwesenheiten</h3></summary><p>
                     <table class="details-table">
                             <tr>
             <th>Zeitraum</th>
@@ -248,9 +277,9 @@ function showUserDetails(event, userId) {
             <td>Tagen Insgesamt</td>
             <td>${data.absences.total_days_absences}</td>
         </tr>
-    </table>
+    </table></p></details><details><summary>
 
-                                 <h3>Projekte und Aufgaben</h3>
+                                 <h3>Projekte und Aufgaben</h3></summary><p>
                     <table class="details-table">
                         <tr>
                             <th>Projekt-ID</th>
@@ -271,37 +300,34 @@ function showUserDetails(event, userId) {
                             <td>${project.total_hours_on_project}</td>
                             <td>${project.task_name}</td>
                         </tr>`).join('')}
-                    </table>
+                    </table></p></details>
+<br>
 
-
-                        <div class="section">
-                            <h2>Statistik letzter Monat</h2>
-                        </div>                        
-                        <div class="mdc-card">
-                            <canvas id="pieChart"></canvas>  
+                        <div class="section"><h2>Statistik</h2></div>
+                                               
+                        <div class="mdc-layout-grid__inner">
+                        <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop">
+                            <div class="mdc-card">
+                            <canvas id="pieChart">Monat</canvas>
+                            </div>  
                         </div>
 
-                        <div class="section">
-                            <h2>Statistik 3 Monaten</h2>
-                        </div>                        
+                        <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop">
                         <div class="mdc-card">
-                            <canvas id="pieChart_3"></canvas>  
-                        </div>
+                            <canvas id="pieChart_3">3 Monate</canvas>  
+                        </div></div>
 
-                        <div class="section">
-                            <h2>Statistik 6 Monaten</h2>
-                        </div>                        
+                        <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop">                     
                         <div class="mdc-card">
-                            <canvas id="pieChart_6"></canvas>  
-                        </div>
+                            <canvas id="pieChart_6">6 Monate</canvas>  
+                        </div></div>
 
-                        <div class="section">
-                            <h2>Statistik gesamte Zeit</h2>
-                        </div>                        
-                        <div class="mdc-card">
-                            <canvas id="pieChart_total"></canvas>  
+                        <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop">
+                            <div class="mdc-card">
+                            <canvas id="pieChart_total">Fesamte Zeit</canvas>  
                         </div>
-
+                        </div>
+                        </div>
                 
                 `;
 
