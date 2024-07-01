@@ -22,7 +22,7 @@ class Database
      * @param string $password Database password
      * @param string $database Database name
      */
-    function __construct($host, $user, $password, $database)
+    function __construct(string $host, string $user, string $password, string $database)
     {
         $this->host = $host;
         $this->user = $user;
