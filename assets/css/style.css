@@ -23287,3 +23287,27 @@ th {
           border: 1px solid #ccc;
           border-radius: 5px;
       }
+      details summary {
+        list-style: none;
+        cursor: pointer;
+        outline: none;
+        display: flex;
+        align-items: center;
+    }
+
+    details summary::-webkit-details-marker {
+        display: none;
+    }
+
+    details summary::before {
+        content: "➤"; 
+        display: inline-block;
+        margin-right: 10px;
+        margin-top: -10px;
+        transform: rotate(0deg);
+        transition: transform 0.3s ease;
+        color: #c3a72d;
+        font-size: 25px;
+    }
+    details[open] summary::before {
+        transform: rotate(90deg);}
