@@ -12,7 +12,7 @@ function sendUserDataRequest() {
     const orderType = 'desc';
     const page = document.querySelector('input[name=page]')?.value || '1';
     let xhr = new XMLHttpRequest();
-    xhr.open('GET', '/admin/employees.php?f=get_emps' +
+    xhr.open('GET', 'employees.php?f=get_emps' +
         '&s_pn=' + searchPersonalNumber +
         '&s_fn=' + searchFirstName +
         '&s_ln=' + searchLastName +
@@ -140,7 +140,7 @@ function insertTableData() {
  */
 function showUserDetails(event, personalNumber) {
     event.preventDefault();
-    fetch(`/admin/users_details.php?f=get_user_details&s_pn=${personalNumber}&ajax=true`)
+    fetch(`users_details.php?f=get_user_details&s_pn=${personalNumber}&ajax=true`)
         .then(response => response.json())
         .then(data => {
             if (data.error) {
