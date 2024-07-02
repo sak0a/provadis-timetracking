@@ -219,7 +219,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ajax']) && isset($_POS
     <!-- Custom js for this page-->
 <script>
     // Global Veriables
-    let currentTab;
+    let currentTab = '<?php echo $currentTab; ?>';
     /**
      * Global Variables for Employee Tab
      */
