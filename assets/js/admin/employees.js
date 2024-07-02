@@ -138,9 +138,9 @@ function insertTableData() {
  * @param event
  * @param personalNumber
  */
-function showUserDetails(event, userId) {
+function showUserDetails(event, personalNumber) {
     event.preventDefault();
-    fetch(`users_details.php?userId=${userId}`)
+    fetch(`/admin/users_details.php?f=get_user_details&s_pn=${personalNumber}&ajax=true`)
         .then(response => response.json())
         .then(data => {
             if (data.error) {

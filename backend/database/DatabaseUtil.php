@@ -453,28 +453,31 @@ class DatabaseUtil
     p.end_date AS 'Enddatum',
     ps.status_name AS 'Status',
     p.planned_time AS 'Geplannte Zeit',
-    COALESCE(SUM(TIMESTAMPDIFF(HOUR, te.start_time, te.end_time)), 0) AS 'Gesamte Stunden'
-FROM 
+    COALESCE(te.total_hours, 0) AS 'Gesamte Stunden'
+FROM
     Projects p
-LEFT JOIN 
-    UserRoles ur ON p.project_id = ur.project_id AND ur.role_id = 7
-LEFT JOIN 
+LEFT JOIN
+    (SELECT ur.project_id, ur.user_id
+     FROM UserRoles ur
+     WHERE ur.role_id = 7) ur ON p.project_id = ur.project_id
+LEFT JOIN
     Users u ON ur.user_id = u.user_id
-LEFT JOIN 
+LEFT JOIN
     ProjectStatus ps ON p.status_id = ps.status_id
-LEFT JOIN 
-    TimeEntries te ON p.project_id = te.project_id
+LEFT JOIN
+    (SELECT te.project_id, SUM(TIMESTAMPDIFF(HOUR, te.start_time, te.end_time)) AS total_hours
+     FROM TimeEntries te
+     GROUP BY te.project_id) te ON p.project_id = te.project_id
 GROUP BY
-    p.project_id, 
-    p.project_name, 
-    u.user_id, 
-    u.first_name, 
-    u.last_name, 
-    p.start_date, 
-    p.end_date, 
-    ps.status_name, 
-    p.planned_time
-";
+    p.project_id,
+    p.project_name,
+    u.user_id,
+    u.first_name,
+    u.last_name,
+    p.start_date,
+    p.end_date,
+    ps.status_name,
+    p.planned_time;";
         $stmt = $this->database->prepare($sql);
         $stmt->execute();
         $result = $stmt->get_result();

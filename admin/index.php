@@ -82,7 +82,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ajax']) && isset($_POS
     <title>CommerzBau</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="../assets/js/anime.min.js"></script>
-
     <script src="../assets/js/admin.js"></script>
     <script src="../assets/js/global.js"></script>
     <link rel="stylesheet" href="../dist/css/style.purged.css">
@@ -207,16 +206,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ajax']) && isset($_POS
             </div>
         </div>
     </div>
-
-    <!-- plugins:js -->
-    <!-- <script src="../assets/vendors/js/vendor.bundle.base.js"></script> -->
-    <!-- endinject -->
-    <!-- Plugin js for this page-->
-    <!-- <script src="../assets/vendors/chartjs/Chart.min.js"></script> -->
-    <!-- End plugin js for this page-->
-    <!-- inject:js -->
-    <!-- end4inject -->
-    <!-- Custom js for this page-->
 <script>
     // Global Veriables
     let currentTab = '<?php echo $currentTab; ?>';

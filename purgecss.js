@@ -29,6 +29,6 @@ function minify(filePath, outputFilePath) {
         });
 }
 
-minify('./dist/css/global.css', './dist/css/global.purged.css');
-minify('./dist/css/admin.css', './dist/css/admin.purged.css');
+//minify('./dist/css/global.css', './dist/css/global.purged.css');
+//minify('./dist/css/admin.css', './dist/css/admin.purged.css');
 minify('./assets/css/style.css', './dist/css/style.purged.css');
