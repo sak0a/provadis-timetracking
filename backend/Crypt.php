@@ -9,11 +9,11 @@ function encryptData(string $data, string $key): string
     return base64_encode($encrypted . '::' . $iv);
 }
 
-function decryptData(string $encryptedData, string $key): string|false
+function decryptData(string $encryptedData, string $key): string
 {
     $cipher = "aes-256-cbc";
     list($encrypted, $iv) = explode('::', base64_decode($encryptedData), 2);
-    return openssl_decrypt($encrypted, $cipher, $key, 0, $iv);
+    return openssl_decrypt($encrypted, $cipher, $key, 0, $iv) ?? '';
 }
 
 function encryptCookie(string $value): string
@@ -27,4 +27,3 @@ function decryptCookie(string $cookie): string|false
     $key = 'BcuIght/79AqsÜ??ßßnbgthrj-;'; // Use the same key as for encryption
     return decryptData($cookie, $key);
 }
-?>
