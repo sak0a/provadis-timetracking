@@ -1,6 +1,6 @@
 <?php
 header('Content-Type: application/json');
-
+require_once '../backend/Auth.php';
 require_once '../backend/database/Database.php';
 require_once '../backend/database/DatabaseUtil.php';
 
@@ -15,8 +15,7 @@ try {
     }
 
     $db = Database::initDefault();
-    $conn = $db->getConnection();
-    $dbUtil = new DatabaseUtil($conn);
+    $dbUtil = new DatabaseUtil($db->getConnection());
 
     $details = $dbUtil->getProjectDetails($projectId);
 

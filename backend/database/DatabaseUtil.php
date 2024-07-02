@@ -285,7 +285,7 @@ class DatabaseUtil
         $userDetails = [];
 
         // Benutzerstammdaten abrufen
-        $sqlUser = "SELECT user_id, personal_number, email, first_name, last_name, birthdate, role_id 
+        $sqlUser = "SELECT *
                     FROM Users 
                     WHERE personal_number = ?";
         $stmtUser = $this->database->prepare($sqlUser);
@@ -297,6 +297,7 @@ class DatabaseUtil
         } else {
             return null; // Benutzer nicht gefunden
         }
+        $userId = $userDetails['user']['user_id'];
 
         // Gearbeitete Stunden abrufen
         $sqlHours = "SELECT
