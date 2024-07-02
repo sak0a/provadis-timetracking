@@ -1,4 +1,5 @@
 <?php
+global $base_url_admin, $base_url;
 include('../backend/Auth.php');
 
 session_start();
@@ -207,6 +208,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ajax']) && isset($_POS
         </div>
     </div>
 <script>
+    const BASE_URL_ADMIN = '<?php echo $base_url_admin; ?>';
+    const BASE_URL = '<?php echo $base_url; ?>';
     // Global Veriables
     let currentTab = '<?php echo $currentTab; ?>';
     /**

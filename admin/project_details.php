@@ -7,7 +7,13 @@ require_once '../backend/database/DatabaseUtil.php';
 use backend\database\Database;
 use backend\database\DatabaseUtil;
 
+session_start();
+
 try {
+    if (!Auth::isLoggedIn()) {
+        throw new Exception("Unauthorized access");
+    }
+
     $projectId = isset($_GET['projectId']) ? intval($_GET['projectId']) : 0;
 
     if ($projectId <= 0) {
