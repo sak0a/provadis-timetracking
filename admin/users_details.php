@@ -1,27 +1,34 @@
 <?php
 header('Content-Type: application/json');
-
+require_once '../backend/Auth.php';
 require_once '../backend/database/Database.php';
 require_once '../backend/database/DatabaseUtil.php';
 
 use backend\database\Database;
 use backend\database\DatabaseUtil;
 
-try {
-    $userId = isset($_GET['userId']) ? intval($_GET['userId']) : 0;
+session_start();
 
-    if ($userId <= 0) {
-        throw new Exception("Invalid user ID");
+try {
+    // Check if the user is authenticated
+    if (!Auth::isLoggedIn()) {
+        throw new Exception("Unauthorized access");
+    }
+
+    $userPersonalNumber = isset($_GET['s_pn']) ? intval($_GET['s_pn']) : 0;
+
+    // 7 digits personal number is required
+    if ($userPersonalNumber < 1000000) {
+        throw new Exception("Invalid Request");
     }
 
     $db = Database::initDefault();
-    $conn = $db->getConnection();
-    $dbUtil = new DatabaseUtil($conn);
+    $dbUtil = new DatabaseUtil($db->getConnection());
 
-    $details = $dbUtil->getUserDetails($userId);
+    $userDetails = $dbUtil->getUserDetails($userPersonalNumber);
 
-    if ($details) {
-        echo json_encode($details);
+    if ($userDetails) {
+        echo json_encode($userDetails);
     } else {
         echo json_encode(['error' => 'User not found']);
     }

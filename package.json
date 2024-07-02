@@ -4,18 +4,26 @@
   "description": "Zeitmanagement SystemF",
   "main": "index.js",
   "scripts": {
-    "build:css": "postcss assets/css/admin.css -o assets/css/build/admin.css"
+    "mix:watch": "mix watch",
+    "php:live": "php -S localhost:3001",
+    "build:css": "node purgecss.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
+  "devDependencies": {
     "autoprefixer": "^10.4.19",
-    "postcss": "^8.4.38",
-    "postcss-cli": "^11.0.0",
+    "laravel-mix": "^6.0.49",
+    "postcss": "^8.4.39",
+    "resolve-url-loader": "^5.0.0",
+    "sass": "^1.77.6",
+    "sass-loader": "^12.6.0",
     "tailwindcss": "^3.4.4"
   },
-  "devDependencies": {
-    "sass": "^1.77.6"
+  "dependencies": {
+    "@fullhuman/postcss-purgecss": "^6.0.0",
+    "cssnano": "^7.0.3",
+    "cssnano-preset-advanced": "^7.0.3",
+    "glob": "^10.4.2"
   }
 }

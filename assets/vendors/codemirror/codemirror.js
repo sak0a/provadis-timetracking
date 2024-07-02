@@ -156,7 +156,7 @@
     return target
   }
 
-  // Counts the column offset in a string, taking tabs into account.
+  // Counts the column offset in a string, taking pages into account.
   // Used mostly to find indentation.
   function countColumn(string, end, tabSize, startIndex, startValue) {
     if (end == null) {

@@ -46,8 +46,7 @@ if (strpos($_SERVER['REQUEST_URI'], 'admin/statistics.php') !== false) {
   <script src="../assets/vendors/chartjs/Chart.min.js"></script>
   <!-- End plugin js for this page-->
   <!-- inject:js -->
-  <script src="../assets/js/material.js"></script>
-  <script src="../assets/js/misc.js"></script>
+
   <!-- endinject -->
   <!-- Custom js for this page-->
   <script src="../../assets/js/chartjs.js"></script>
