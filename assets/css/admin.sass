@@ -2,9 +2,9 @@
 @tailwind components
 @tailwind utilities
 
-.employee-container 
+.employee-container, .projects-container
     padding: 2rem
-    .employee-header 
+    .employee-header, .projects-header
         @apply flex items-center justify-between
         p
             @apply text-black font-semibold
@@ -14,7 +14,7 @@
             @apply text-left text-2xl leading-6
         .description 
             @apply mt-2 text-sm text-black
-        .add-employee-btn 
+        .add-employee-btn, .add-project-btn
             @apply bg-secondary text-white
             transition: background 0.3s ease-in-out, box-shadow 0.3s ease-in-out
             display: inline-flex
@@ -27,9 +27,9 @@
             box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.4)
             &:hover 
                 box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12)
-    .employee-main-container 
+    .employee-main-container, .projects-main-container
         @apply p-6 bg-white rounded-[20px]
-    .employee-table-wrapper     
+    .employee-table-wrapper, .projects-table-wrapper
         @apply inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8
         table 
             @apply min-w-full divide-primary divide-y-[3]
@@ -41,20 +41,18 @@
                     @apply grid place-items-center h-full w-12 text-gray-300
                 input 
                     @apply h-full w-full outline-none text-sm text-gray-700 pr-2
-
         .table-head-titles 
             th 
                 @apply py-3.5 pl-2 text-left text-sm font-semibold text-black
         #tableBody 
             @apply divide-y divide-secondary
+            .employee-number
+                @apply hover:text-primary
+            .employee-mail
+                @apply hover:text-primary
             td 
                 font-weight: 500
                 @apply whitespace-nowrap text-base text-secondary py-3
-            
-        
-    
-
-
 .admin-top-bar 
     transition: background-color 0.3s ease-in-out
     box-shadow: 0 10px 13px -7px #000000
@@ -115,18 +113,18 @@
 .dark-mode 
     body 
         @apply bg-[#2E2E2E] text-black
-    .employee-container 
+    .employee-container, .projects-container
         background: #2E2E2E
-        .employee-main-container 
+        .employee-main-container, .projects-main-container
             background: #202020
-        .employee-header 
+        .employee-header, .projects-header
             .title 
                 @apply text-primary
             .description 
                 @apply text-normal
-            .add-employee-btn 
+            .add-employee-btn, .add-project-btn
                 @apply bg-black text-normal
-        .employee-table-wrapper 
+        .employee-table-wrapper, .projects-table-wrapper
             .table-head-titles 
                 th 
                     @apply text-white

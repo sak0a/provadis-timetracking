@@ -205,7 +205,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ajax']) && isset($_POS
     /**
      * Global Variables for Employee Tab
      */
-    let responseData = [];
+    let respvonseData = [];
     let searchInputs;
     let lastRequestTime = 0;
     const throttleDelay = 200;

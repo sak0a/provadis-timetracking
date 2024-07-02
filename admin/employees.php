@@ -134,35 +134,31 @@ function getUsersAJAX(): string {
     /**
      * Create JSON response
      */
-    $response .= '{        
-        "start_range": '. $startRange .',
-        "end_range": '. $endRange .',
-        "total_results": '. $userCount .',
-        "page_range": '. 2 .',
-        "current_page": '. $pageNumber . ', 
-        "total_pages": '. ceil($userCount / $pageSize) . ',
-        "page_size": '. $pageSize . ',
-        "users": [';
-    $i = 0;
+    $responseArray = [
+        "start_range" => $startRange,
+        "end_range" => $endRange,
+        "total_results" => $userCount,
+        "page_range" => 2,
+        "current_page" => $pageNumber,
+        "total_pages" => ceil($userCount / $pageSize),
+        "page_size" => $pageSize,
+        "users" => []
+    ];
     foreach ($users as $user) {
-        $response .= '{
-            "personal_number": "' . $user["personal_number"] . '",
-            "first_name": "' . $user["first_name"] . '",
-            "last_name": "' . $user["last_name"] . '",
-            "email": "'. $user["email"] . '", 
-            "birthdate": "' . $user["birthdate"] . '", 
-            "entry_date": "' . $user["entry_date"] . '",
-            "exit_date": "' . $user["exit_date"] . '",
-            "role_id": "' . $user["role_id"] . '",
-            "role_name": "' . $dbUtil->getRoleById($user["role_id"])["role_name"] . '",
-            "disability": "' . $user["disability"] . '"}';
-        if ($i < count($users) - 1) {
-            $response .= ',';
-        }
-        $i++;
+        $responseArray["users"][] = [
+            "personal_number" => $user["personal_number"],
+            "first_name" => $user["first_name"],
+            "last_name" => $user["last_name"],
+            "email" => $user["email"],
+            "birthdate" => $user["birthdate"],
+            "entry_date" => $user["entry_date"],
+            "exit_date" => $user["exit_date"],
+            "role_id" => $user["role_id"],
+            "role_name" => $dbUtil->getRoleById($user["role_id"])["role_name"],
+            "disability" => $user["disability"]
+        ];
     }
-    $response .= ']}';
-    return $response;
+    return json_encode($responseArray);
 }
 ?>
 <div class="employee-container">
