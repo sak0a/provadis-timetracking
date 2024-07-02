@@ -444,22 +444,37 @@ class DatabaseUtil
     public function getAllProjects(): array
     {
         $sql = "SELECT 
-                p.project_id AS 'Projekt-ID',
-                p.project_name AS 'Projektname',
-                u.user_id AS 'Projektleiter_ID',
-                u.first_name AS 'Projektleiter_Vorname',
-                u.last_name AS 'Projektleiter_Nachname',
-                p.start_date AS 'Startdatum',
-                p.end_date AS 'Enddatum',
-                ps.status_name AS 'Status'
-            FROM 
-                Projects p
-            LEFT JOIN 
-                UserRoles ur ON p.project_id = ur.project_id AND ur.role_id = 7
-            LEFT JOIN 
-                Users u ON ur.user_id = u.user_id
-            LEFT JOIN 
-                ProjectStatus ps ON p.status_id = ps.status_id";
+    p.project_id AS 'Projekt-ID',
+    p.project_name AS 'Projektname',
+    u.user_id AS 'Projektleiter_ID',
+    u.first_name AS 'Projektleiter_Vorname',
+    u.last_name AS 'Projektleiter_Nachname',
+    p.start_date AS 'Startdatum',
+    p.end_date AS 'Enddatum',
+    ps.status_name AS 'Status',
+    p.planned_time AS 'Geplannte Zeit',
+    COALESCE(SUM(TIMESTAMPDIFF(HOUR, te.start_time, te.end_time)), 0) AS 'Gesamte Stunden'
+FROM 
+    Projects p
+LEFT JOIN 
+    UserRoles ur ON p.project_id = ur.project_id AND ur.role_id = 7
+LEFT JOIN 
+    Users u ON ur.user_id = u.user_id
+LEFT JOIN 
+    ProjectStatus ps ON p.status_id = ps.status_id
+LEFT JOIN 
+    TimeEntries te ON p.project_id = te.project_id
+GROUP BY
+    p.project_id, 
+    p.project_name, 
+    u.user_id, 
+    u.first_name, 
+    u.last_name, 
+    p.start_date, 
+    p.end_date, 
+    ps.status_name, 
+    p.planned_time
+";
         $stmt = $this->database->prepare($sql);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -471,16 +486,50 @@ class DatabaseUtil
     }
 
     public function getProjectDetails($projectId) {
-        $sql = "CALL GetProjectDetails(?)";
+        $sql = "
+            SELECT 
+                p.project_id AS 'Projekt-ID',
+                p.project_name AS 'Projektname',
+                u.user_id AS 'Projektleiter_ID',
+                u.first_name AS 'Projektleiter_Vorname',
+                u.last_name AS 'Projektleiter_Nachname',
+                p.start_date AS 'Startdatum',
+                p.end_date AS 'Enddatum',
+                ps.status_name AS 'Status',
+                p.planned_time AS 'Geplannte Zeit',
+                COALESCE(SUM(TIMESTAMPDIFF(HOUR, te.start_time, te.end_time)), 0) AS 'Gesamte Stunden'
+            FROM 
+                Projects p
+            LEFT JOIN 
+                UserRoles ur ON p.project_id = ur.project_id AND ur.role_id = 7
+            LEFT JOIN 
+                Users u ON ur.user_id = u.user_id
+            LEFT JOIN 
+                ProjectStatus ps ON p.status_id = ps.status_id
+            LEFT JOIN 
+                TimeEntries te ON p.project_id = te.project_id
+            WHERE
+                p.project_id = ?
+            GROUP BY
+                p.project_id, 
+                p.project_name, 
+                u.user_id, 
+                u.first_name, 
+                u.last_name, 
+                p.start_date, 
+                p.end_date, 
+                ps.status_name, 
+                p.planned_time
+        ";
         $stmt = $this->database->prepare($sql);
         $stmt->bind_param("i", $projectId);
         $stmt->execute();
         $result = $stmt->get_result();
-
+    
         $details = $result->fetch_assoc();
         return $details;
     }
-
+    
     // Bearbeiten eines Projekts
     public function updateProject($project_id, $project_name, $start_date, $end_date, $status_id)
     {

@@ -10,13 +10,14 @@ function showProjectDetails(event, projectId) {
             } else {
                 let detailsDiv = document.getElementById('projectDetailsContent');
                 detailsDiv.innerHTML = `
-                    <h2>Projektdetails für ${data.project_name}</h2>
-                    <div class="form-group">Projekt-ID: ${data.project_id}</div>
-                    <div class="form-group">Startdatum: ${data.start_date}</div>
-                    <div class="form-group">Enddatum: ${data.end_date}</div>
-                    <div class="form-group">Status: ${data.project_status}</div>
-                    <div class="form-group">Verantwortliche: ${data.employees}</div>
-                    <div class="form-group">Gesamte Stunden: ${data.total_hours_worked}</div>
+                    <h2>Projektdetails für ${data['Projektname']}</h2>
+                    <div class="form-group">Projekt-ID: ${data['Projekt-ID']}</div>
+                    <div class="form-group">Startdatum: ${data['Startdatum']}</div>
+                    <div class="form-group">Enddatum: ${data['Enddatum']}</div>
+                    <div class="form-group">Status: ${data['Status']}</div>
+                    <div class="form-group">Projektleiter: ${data['Projektleiter_Vorname']} ${data['Projektleiter_Nachname']}</div>
+                    <div class="form-group">Geplannte Zeit: ${data['Geplannte Zeit']} Stunden</div>
+                    <div class="form-group">Gesamte Stunden: ${data['Gesamte Stunden']} Stunden</div>
                 `;
                 document.getElementById('moreDetails').style.display = 'block';
             }
