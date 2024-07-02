@@ -28,4 +28,3 @@ function decryptCookie(string $cookie): string|false
     return decryptData($cookie, $key);
 }
 ?>
-?>
