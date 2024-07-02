@@ -139,16 +139,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ajax']) && isset($_POS
                         </div>
                     </nav>
                 </div>
-                <div class="profile-actions">
-                    <a href="/">Mitarbeiteransicht</a>
-                    <span class="divider"></span>
-                    <form method="post">
-                        <button type="submit" class="anmeldung_form" id="logout" name="logout">
-                            Abmelden
-                        </button>
-                    </form>
-                </div>
-
             </div>
         </aside>
         <!-- partial -->
