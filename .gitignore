@@ -8,3 +8,4 @@ admin/statistics11.php
 /package-lock.json
 /mix-manifest.json
 /bun.lockb
+dist/
