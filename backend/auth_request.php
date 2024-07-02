@@ -4,55 +4,53 @@ session_start();
 
 require_once __DIR__ . '/database/Database.php';
 require_once __DIR__ . '/database/DatabaseUtil.php';
-require_once __DIR__ . '/crypt.php';
-
+require_once __DIR__ . '/Crypt.php';
+require_once __DIR__ . '/Auth.php';
 
 use backend\database\Database;
 use backend\database\DatabaseUtil;
 
-
-// Initialisierung der Datenbankverbindung
+// Initialize the database connection
 $db = Database::initDefault();
-// Erstellen eines DatabaseUtil-Objekts
 $dbUtil = new DatabaseUtil($db->getConnection());
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'];
     $password = $_POST['password'];
 
-    // Überprüfen, ob der Benutzer existiert
+    // Check if the user exists
     if ($dbUtil->userExists($email)) {
-        // Benutzer abrufen
+        // Retrieve user data
         $user = $dbUtil->getUserByEmail($email);
 
         if (password_verify($password, $user['password_hash'])) {
-            // Sitzung starten und Benutzerdaten setzen
-            $_SESSION['angemeldet'] = true;
+            // Start session and set user data
+            $_SESSION[Auth::SESSION_AUTH_KEY] = true;
+            $_SESSION[Auth::SESSION_EMAIL_KEY] = $email;
             $_SESSION['user'] = $user;
             session_regenerate_id(true);
 
-            setcookie('angemeldet', true, time() + 3600 * 24 * 7, '/', '', true, true);
-            $encryptedCookie = encryptCookie($email);
-            setcookie('secure_user', $encryptedCookie, time() + 3600 * 24 * 7, '/', '', true, true);
+
+            // Set secure cookie
+            Auth::setSecureCookie($email);
 
             header("Location: ../");
-            echo 'alles geklappt';
+            echo 'Login successful';
             exit();
         } else {
-            $_SESSION['error'] = "Falsches Passwort.";
+            $_SESSION['error'] = "Incorrect password.";
             header("Location: ../login");
-            echo 'Falsches Passwort';
+            echo 'Incorrect password';
             exit();
         }
     } else {
-        $_SESSION['error'] = "Benutzer nicht gefunden.";
-        //header("Location: ../login");
-        echo 'Benutzer nicht gefunden.';
+        $_SESSION['error'] = "User not found.";
+        echo 'User not found.';
         exit();
     }
 }
 
-// Schließen der Datenbankverbindung
+// Close the database connection
 $db->__destruct();
 
 ob_end_flush();

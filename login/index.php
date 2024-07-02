@@ -3,17 +3,18 @@ include('../backend/Auth.php');
 
 session_start();
 
+
+// Logout-Logik
+Auth::logout();
+// Login-Logik
+Auth::login();
+// Session-Logik
+Auth::checkSession();
+
 if (Auth::isLoggedIn()) {
     header("Location: ../");
     exit();
 }
-
-// Logout-Logik
-Auth::Logout();
-// Login-Logik
-Auth::Login();
-// Session-Logik
-Auth::CheckSession();
 ?>
 
 <!DOCTYPE html>
@@ -90,8 +91,6 @@ Auth::CheckSession();
 <!-- Plugin js for this page-->
 <!-- End plugin js for this page-->
 <!-- inject:js -->
-<script src="../assets/js/material.js"></script>
-<script src="../assets/js/misc.js"></script>
 <span id="loginBtn" style="box-shadow: 0px 0px 0px;"></span>
 <span id="registerBtn" style="box-shadow: 0px 0px 0px;"></span>
 <!-- endinject -->

@@ -1,0 +1,54 @@
+@import url(https://cdn.jsdelivr.net/npm/theme-toggles@4.10.1/css/expand.min.css)
+
+
+/**
+  * Theme Toggle for Dark Mode . START
+  */
+#theme-toggle
+    transition: background 0.3s ease-in-out, box-shadow 0.3s ease-in-out
+    background: #FFF
+    border-radius: 100px
+    padding: 2px 12px
+    margin: 0 auto
+    box-shadow:  0 2px 4px -1px rgba(0, 0, 0, 0.4)
+    &:hover
+        box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12)
+    svg
+        scale: 100%
+        color: #000
+
+.dark-mode #theme-toggle
+    background: #000
+    svg
+        color: #FFF
+        scale: 100%
+/**
+  * Theme Toggle for Dark Mode . END
+  */
+
+
+.dark-mode .gradient-border::before
+    background: linear-gradient(90deg,#303030 0%,#303030 25%, #ffcb00 50%, #f9d849 75%,#F3D046 100%)
+    content: ""
+    position: absolute
+    border-radius: 2rem
+    top: 0
+    left: 0
+    right: 0
+    bottom: 0
+    padding: 2px
+    width: 100%
+    background-size: 400% auto
+    opacity: 0.5
+    transition: background-position 0.3s ease-in-out, opacity 0.2s ease-in-out
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)
+    -webkit-mask-composite: xor
+    mask-composite: exclude
+.dark-mode .gradient-border:hover::before
+    background-position: -50% 0
+    opacity: 1
+.dark-mode .gradient-border
+    -webkit-backdrop-filter: blur(10px)
+    backdrop-filter: blur(10px)
+    background-color: #000
+    position: relative

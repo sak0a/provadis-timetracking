@@ -1,18 +1,31 @@
 <?php
 
-function encryptCookie($value): string
+function encryptData(string $data, string $key): string
 {
-    $key = 'BcuIght/79AqsÜ??ßßnbgthrj-;'; // Ändern Sie dies zu einem sicheren Schlüssel
     $cipher = "aes-256-cbc";
     $ivlen = openssl_cipher_iv_length($cipher);
     $iv = openssl_random_pseudo_bytes($ivlen);
-    $encrypted = openssl_encrypt($value, $cipher, $key, 0, $iv);
+    $encrypted = openssl_encrypt($data, $cipher, $key, 0, $iv);
     return base64_encode($encrypted . '::' . $iv);
 }
-function decryptCookie($cookie): false|string
+
+function decryptData(string $encryptedData, string $key): string|false
 {
-    $key = 'BcuIght/79AqsÜ??ßßnbgthrj-;'; // Verwenden Sie denselben Schlüssel wie beim Verschlüsseln
-    list($encrypted_data, $iv) = explode('::', base64_decode($cookie), 2);
-    return openssl_decrypt($encrypted_data, "aes-256-cbc", $key, 0, $iv);
+    $cipher = "aes-256-cbc";
+    list($encrypted, $iv) = explode('::', base64_decode($encryptedData), 2);
+    return openssl_decrypt($encrypted, $cipher, $key, 0, $iv);
 }
+
+function encryptCookie(string $value): string
+{
+    $key = 'BcuIght/79AqsÜ??ßßnbgthrj-;'; // Change this to a secure key
+    return encryptData($value, $key);
+}
+
+function decryptCookie(string $cookie): string|false
+{
+    $key = 'BcuIght/79AqsÜ??ßßnbgthrj-;'; // Use the same key as for encryption
+    return decryptData($cookie, $key);
+}
+?>
 ?>

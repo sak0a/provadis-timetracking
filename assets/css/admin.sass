@@ -35,21 +35,16 @@
             @apply min-w-full divide-primary divide-y-[3]
         .table-head-search 
             .search-box 
-                @apply relative flex items-center w-full h-8 max-w-48 rounded-full shadow-md focus-within:shadow-lg bg-white overflow-hidden
+                @apply relative flex items-center w-full h-8 rounded-full shadow-md focus-within:shadow-lg bg-white overflow-hidden
                 @apply transition-all duration-300 ease-in-out
                 .search-icon 
                     @apply grid place-items-center h-full w-12 text-gray-300
-                
                 input 
                     @apply h-full w-full outline-none text-sm text-gray-700 pr-2
-                
-            
-        
+
         .table-head-titles 
             th 
-                @apply py-3.5 pl-2 text-left text-sm font-semibold text-black 
-            
-        
+                @apply py-3.5 pl-2 text-left text-sm font-semibold text-black
         #tableBody 
             @apply divide-y divide-secondary
             td 

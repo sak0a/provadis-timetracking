@@ -1,4 +1,4 @@
-function sendRequest() {
+function sendUserDataRequest() {
     const currentTime = Date.now();
     if (!(currentTime - lastRequestTime >= throttleDelay)) {
         return;
@@ -143,10 +143,8 @@ function showUserDetails(event, personalNumber) {
         .then(response => response.json())
         .then(data => {
             if (data.error) {
-                console.error('Fehler:', data.error);
-                alert('Fehler: ' + data.error);
+                console.error(data.error);
             } else {
-                console.log("CHANGED")
                 let detailsDiv = document.getElementById('userDetailsContent');
                 detailsDiv.innerHTML = `
                     <h2>Benutzerdetails für ${data.user.first_name} ${data.user.last_name}</h2>
@@ -191,7 +189,7 @@ function showUserDetails(event, personalNumber) {
                 document.getElementById('moreDetails').style.display = 'block';
             }
         })
-        .catch(error => console.error('Fehler beim Abrufen der Benutzerdetails:', error));
+        .catch(error => console.error(error));
 }
 
 
@@ -205,11 +203,11 @@ anime({
     easing: 'easeOutQuad', // Easing function for a smooth fade-in
     delay: 2 * 50 // Staggered delay for each row
 });
-sendRequest();
+sendUserDataRequest();
 // Event listener for search inputs
 searchInputs = document.querySelectorAll('.search-box input');
 searchInputs.forEach(function (input) {
-    input.addEventListener('input', sendRequest);
+    input.addEventListener('input', sendUserDataRequest);
 });
 // Event listener for pagination links
 document.addEventListener('click', function (event) {
@@ -217,6 +215,6 @@ document.addEventListener('click', function (event) {
     if (element.tagName === 'A' && element.hasAttribute('data-page')) {
         event.preventDefault();
         document.querySelector('input[name=page]').value = element.getAttribute('data-page');
-        sendRequest();
+        sendUserDataRequest();
     }
 });

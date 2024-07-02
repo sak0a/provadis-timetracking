@@ -280,16 +280,16 @@ class DatabaseUtil
 
 
     // Informationen für den Nutzer aufrufen
-    public function getUserDetails($userId): ?array
+    public function getUserDetails($personalNumber): ?array
     {
         $userDetails = [];
 
         // Benutzerstammdaten abrufen
         $sqlUser = "SELECT user_id, personal_number, email, first_name, last_name, birthdate, role_id 
                     FROM Users 
-                    WHERE user_id = ?";
+                    WHERE personal_number = ?";
         $stmtUser = $this->database->prepare($sqlUser);
-        $stmtUser->bind_param("i", $userId);
+        $stmtUser->bind_param("i", $personalNumber);
         $stmtUser->execute();
         $resultUser = $stmtUser->get_result();
         if ($resultUser->num_rows > 0) {
@@ -351,7 +351,7 @@ class DatabaseUtil
                         WHERE 
                             ur.user_id = ?";
         $stmtProjects = $this->database->prepare($sqlProjects);
-        $stmtProjects->bind_param("ii", $userId, $userId);
+        $stmtProjects->bind_param("ii",  $userDetails['user']['user_id'], $userDetails['user']['user_id']);
         $stmtProjects->execute();
         $resultProjects = $stmtProjects->get_result();
         $userDetails['projects'] = $resultProjects->fetch_all(MYSQLI_ASSOC);
