@@ -453,7 +453,7 @@ class DatabaseUtil
     p.end_date AS 'Enddatum',
     ps.status_name AS 'Status',
     p.planned_time AS 'Geplannte Zeit',
-    COALESCE(SUM(TIMESTAMPDIFF(HOUR, te.start_time, te.end_time)), 0) AS 'Gesamte Stunden'
+    COALESCE(te.total_hours, 0) AS 'Gesamte Stunden'
 FROM 
     Projects p
 LEFT JOIN 
@@ -463,17 +463,14 @@ LEFT JOIN
 LEFT JOIN 
     ProjectStatus ps ON p.status_id = ps.status_id
 LEFT JOIN 
-    TimeEntries te ON p.project_id = te.project_id
+    (SELECT 
+        project_id, 
+        SUM(TIMESTAMPDIFF(HOUR, start_time, end_time)) AS total_hours 
+     FROM 
+        TimeEntries 
 GROUP BY
-    p.project_id, 
-    p.project_name, 
-    u.user_id, 
-    u.first_name, 
-    u.last_name, 
-    p.start_date, 
-    p.end_date, 
-    ps.status_name, 
-    p.planned_time
+        project_id
+    ) te ON p.project_id = te.project_id
 ";
         $stmt = $this->database->prepare($sql);
         $stmt->execute();
