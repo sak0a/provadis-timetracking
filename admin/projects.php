@@ -15,22 +15,10 @@ $db = Database::initDefault();
 $dbUtil = new DatabaseUtil($db->getConnection());
 
 /**
- * Search Filters (normally from session, maybe remove later)
- */
-$searchId = '';
-$searchName = '';
-$searchLeader = '';
-$searchStartDate = '';
-$searchEndDate = '';
-$searchStatus = '';
-$searchOrder = 'desc';
-
-/**
  * Initial Pagination Variables
  */
 $pageNumber = 1;
 $pageSize = 10;
-$resultCount = $dbUtil->getTotalUserCount();
 
 if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['ajax']) && isset($_GET['f']) && $_GET['f'] === 'get_projects') {
     try {

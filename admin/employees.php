@@ -14,22 +14,10 @@ $db = Database::initDefault();
 $dbUtil = new DatabaseUtil($db->getConnection());
 
 /**
- * Search Filters (normally from session, maybe remove later)
- */
-$searchPersonalNumber = '';
-$searchFirstName = '';
-$searchLastName = '';
-$searchEmail = '';
-$searchRole = '';
-$searchEntryDate = '';
-$searchOrder = 'desc';
-
-/**
  * Initial Pagination Variables
  */
 $pageNumber = 1;
 $pageSize = 10;
-$resultCount = $dbUtil->getTotalUserCount();
 
 if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['ajax']) && isset($_GET['f']) && $_GET['f'] === 'get_emps') {
     try {
@@ -182,7 +170,6 @@ function getUsersAJAX(): string {
                     <table>
                         <thead>
                         <tr class="table-head-search">
-                            <?php echo "
                             <th scope='col'>
                                 <div class='search-box'>
                                     <div class='search-icon'>
@@ -190,7 +177,7 @@ function getUsersAJAX(): string {
                                             <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' />
                                         </svg>
                                     </div>
-                                    <input type='text' name='emp_search_pn' placeholder='Suche...' value='" . (isset($_SESSION['emp_search_personalnumber']) ? $searchPersonalNumber : '') . "' />
+                                    <input type='text' name='emp_search_pn' placeholder='Suche...' value='' />
                                 </div>
                             </th>
                             <th scope='col'>
@@ -200,7 +187,7 @@ function getUsersAJAX(): string {
                                             <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' />
                                         </svg>
                                     </div>
-                                    <input type='text' name='emp_search_fn' placeholder='Suche...' value='" . (isset($_SESSION['emp_search_firstname']) ? $searchFirstName : '') . "' />
+                                    <input type='text' name='emp_search_fn' placeholder='Suche...' value='' />
                                 </div>
                             </th>
                             <th scope='col'>
@@ -210,7 +197,7 @@ function getUsersAJAX(): string {
                                             <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' />
                                         </svg>
                                     </div>
-                                  <input type='text' name='emp_search_ln' placeholder='Suche...' value='" . (isset($_SESSION['emp_search_lastname']) ? $searchLastName : '') . "' />
+                                  <input type='text' name='emp_search_ln' placeholder='Suche...' value='' />
                                  </div>
                             </th>
                             <th scope='col'>
@@ -220,7 +207,7 @@ function getUsersAJAX(): string {
                                             <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' />
                                         </svg>
                                     </div>
-                                  <input type='text' name='emp_search_email' placeholder='Suche...' value='" . (isset($_SESSION['emp_search_email']) ? $searchEmail : '') . "' />
+                                  <input type='text' name='emp_search_email' placeholder='Suche...' value='' />
                                  </div>
                             </th>
                             <th scope='col'>
@@ -230,7 +217,7 @@ function getUsersAJAX(): string {
                                             <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' />
                                         </svg>
                                     </div>
-                                  <input type='text' name='emp_search_role' placeholder='Suche...' value='" . (isset($_SESSION['emp_search_role']) ? $searchRole : '') . "' />
+                                  <input type='text' name='emp_search_role' placeholder='Suche...' value='' />
                                  </div>
                             </th>
                             <th scope='col'>
@@ -240,9 +227,9 @@ function getUsersAJAX(): string {
                                             <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' />
                                         </svg>
                                     </div>
-                                  <input type='text' name='emp_search_entrydate' placeholder='Suche...' value='" . (isset($_SESSION['emp_search_entrydate']) ? $searchEntryDate : '') . "' />
+                                  <input type='text' name='emp_search_entrydate' placeholder='Suche...' value='' />
                                  </div>
-                            </th>" ?>
+                            </th>
                         </tr>
                         <tr class="table-head-titles">
                             <th scope="col">Personalnummer</th>
