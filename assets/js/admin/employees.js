@@ -277,24 +277,28 @@ function showUserDetails(event, userId) {
 
                         <div class="section"><h2>Statistik</h2></div>
                                                
-                        <div class="mdc-layout-grid__inner">
+                        <div class="mdc-layout-grid__inner">                    
                         <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop">
+                        <h6>1 Monat</h6>
                             <div class="mdc-card">
                             <canvas id="pieChart">Monat</canvas>
                             </div>  
                         </div>
 
                         <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop">
+                        <h6>3 Monate</h6>
                         <div class="mdc-card">
                             <canvas id="pieChart_3">3 Monate</canvas>  
                         </div></div>
 
-                        <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop">                     
+                        <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop">      
+                        <h6>6 Monate</h6>               
                         <div class="mdc-card">
                             <canvas id="pieChart_6">6 Monate</canvas>  
                         </div></div>
 
                         <div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop">
+                        <h6>gesamte Zeit</h6>
                             <div class="mdc-card">
                             <canvas id="pieChart_total">Fesamte Zeit</canvas>  
                         </div>

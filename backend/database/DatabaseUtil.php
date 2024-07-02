@@ -313,17 +313,17 @@ class DatabaseUtil
         $userDetails['hours'] = $resultHours->fetch_assoc();
 
         $sqlGeneralHours = "SELECT
-    COALESCE(SUM(CASE WHEN te.start_time >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH) AND te.project_id = 184  THEN TIMESTAMPDIFF(HOUR, te.start_time, te.end_time) ELSE 0 END), 0) AS hours_last_month_allg_Arbeit,
-    COALESCE(SUM(CASE WHEN te.start_time >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH) AND te.project_id = 184  THEN TIMESTAMPDIFF(HOUR, te.start_time, te.end_time) ELSE 0 END), 0) AS hours_last_3_months_allg_Arbeit,
-    COALESCE(SUM(CASE WHEN te.start_time >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH) AND te.project_id = 184  THEN TIMESTAMPDIFF(HOUR, te.start_time, te.end_time) ELSE 0 END), 0) AS hours_last_6_months_allg_Arbeit,
-    COALESCE(SUM(CASE WHEN te.project_id = 184 THEN TIMESTAMPDIFF(HOUR, te.start_time, te.end_time) ELSE 0 END), 0) AS total_hours_allg_Arbeit
-FROM TimeEntries te
-WHERE te.user_id = ?";
-$stmtGeneralHours = $this->database->prepare($sqlGeneralHours);
-$stmtGeneralHours->bind_param("i", $userId);
-$stmtGeneralHours->execute();
-$resultGeneralHours = $stmtGeneralHours->get_result();
-$userDetails['general_hours'] = $resultGeneralHours->fetch_assoc();
+        COALESCE(SUM(CASE WHEN te.start_time >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH) AND te.project_id = 184  THEN TIMESTAMPDIFF(HOUR, te.start_time, te.end_time) ELSE 0 END), 0) AS hours_last_month_allg_Arbeit,
+        COALESCE(SUM(CASE WHEN te.start_time >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH) AND te.project_id = 184  THEN TIMESTAMPDIFF(HOUR, te.start_time, te.end_time) ELSE 0 END), 0) AS hours_last_3_months_allg_Arbeit,
+        COALESCE(SUM(CASE WHEN te.start_time >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH) AND te.project_id = 184  THEN TIMESTAMPDIFF(HOUR, te.start_time, te.end_time) ELSE 0 END), 0) AS hours_last_6_months_allg_Arbeit,
+        COALESCE(SUM(CASE WHEN te.project_id = 184 THEN TIMESTAMPDIFF(HOUR, te.start_time, te.end_time) ELSE 0 END), 0) AS total_hours_allg_Arbeit
+        FROM TimeEntries te
+        WHERE te.user_id = ?";
+        $stmtGeneralHours = $this->database->prepare($sqlGeneralHours);
+        $stmtGeneralHours->bind_param("i", $userId);
+        $stmtGeneralHours->execute();
+        $resultGeneralHours = $stmtGeneralHours->get_result();
+        $userDetails['general_hours'] = $resultGeneralHours->fetch_assoc();
 
         $sqlAbsences ="SELECT
         COALESCE(SUM(CASE WHEN a.start_date >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH) THEN DATEDIFF(a.end_date, a.start_date) + 1 ELSE 0 END), 0) AS days_last_month_absences,
