@@ -1,4 +1,4 @@
-<?php 
+<?php
 require_once '../backend/database/Database.php';
 require_once '../backend/database/DatabaseUtil.php';
 if (strpos($_SERVER['REQUEST_URI'], 'admin/projects.php') !== false) {
@@ -27,13 +27,13 @@ $projects = $dbUtil->getAllProjects();
     <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="shortcut icon" href="../assets/images/favicon.png" />
     <script>
-</script>
+    </script>
 
 </head>
 <body>
 
 <div class="container">
-    
+
     <!-- Benutzerverwaltung -->
     <div class="section">
         <h2>Projektverwaltung</h2>
@@ -44,29 +44,29 @@ $projects = $dbUtil->getAllProjects();
     <div class="section">
         <h2>Übersicht über Projekte und Tätigkeiten</h2>
         <table>
-    <tr>
-        <th>Projekt-ID</th>
-        <th>Projektname</th>
-        <th>Projektleiter</th>
-        <th>Startdatum</th>
-        <th>Enddatum</th>
-        <th>Status</th>
-    </tr>
-    <?php foreach ($projects as $project): ?>
-    <tr>
-                <td><a href="#" onclick="showProjectDetails(event, <?php echo htmlspecialchars($project['Projekt-ID']); ?>)"><?php echo htmlspecialchars($project['Projekt-ID']); ?></a></td>
-                <td><a href="#" onclick="showProjectDetails(event, <?php echo htmlspecialchars($project['Projekt-ID']); ?>)"><?php echo htmlspecialchars($project['Projektname']); ?></a></td>
-                <td><?php  echo htmlspecialchars($project['Projektleiter_Vorname']) . ' ' . htmlspecialchars($project['Projektleiter_Nachname']) ;?></td>
-                <td><?php echo htmlspecialchars($project['Startdatum']); ?></td>
-                <td><?php echo htmlspecialchars($project['Enddatum']); ?></td>
-                <td><?php echo htmlspecialchars($project['Status']); ?></td>
-    </tr>
-    <?php endforeach; ?>
-</table>
+            <tr>
+                <th>Projekt-ID</th>
+                <th>Projektname</th>
+                <th>Projektleiter</th>
+                <th>Startdatum</th>
+                <th>Enddatum</th>
+                <th>Status</th>
+            </tr>
+            <?php foreach ($projects as $project): ?>
+                <tr>
+                    <td><a href="#" onclick="showProjectDetails(event, <?php echo htmlspecialchars($project['Projekt-ID']); ?>)"><?php echo htmlspecialchars($project['Projekt-ID']); ?></a></td>
+                    <td><a href="#" onclick="showProjectDetails(event, <?php echo htmlspecialchars($project['Projekt-ID']); ?>)"><?php echo htmlspecialchars($project['Projektname']); ?></a></td>
+                    <td><?php  echo htmlspecialchars($project['Projektleiter_Vorname']) . ' ' . htmlspecialchars($project['Projektleiter_Nachname']) ;?></td>
+                    <td><?php echo htmlspecialchars($project['Startdatum']); ?></td>
+                    <td><?php echo htmlspecialchars($project['Enddatum']); ?></td>
+                    <td><?php echo htmlspecialchars($project['Status']); ?></td>
+                </tr>
+            <?php endforeach; ?>
+        </table>
 
     </div>
 
-    
+
 </div>
 <!-- Modal for adding a new user -->
 <div id="addProjectModal" class="modal">
@@ -91,7 +91,7 @@ $projects = $dbUtil->getAllProjects();
                     <option value="11">Abgebrochen</option>
                 </select>
             </div>
-             <div class="form-group">
+            <div class="form-group">
                 <label for="department_head">Verantwortlicher</label> <!--es wird in die tabelle UserRoles (user_id)(project_id)(role_id) geschrieben-->
                 <select id="department_head" name="department_head" required>
                     <option value="1">Alex</option>

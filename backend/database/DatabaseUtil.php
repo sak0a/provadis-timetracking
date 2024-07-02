@@ -280,16 +280,16 @@ class DatabaseUtil
 
 
     // Informationen für den Nutzer aufrufen
-    public function getUserDetails($userId): ?array
+    public function getUserDetails($personalNumber): ?array
     {
         $userDetails = [];
 
         // Benutzerstammdaten abrufen
         $sqlUser = "SELECT user_id, personal_number, email, first_name, last_name, birthdate, role_id 
                     FROM Users 
-                    WHERE user_id = ?";
+                    WHERE personal_number = ?";
         $stmtUser = $this->database->prepare($sqlUser);
-        $stmtUser->bind_param("i", $userId);
+        $stmtUser->bind_param("i", $personalNumber);
         $stmtUser->execute();
         $resultUser = $stmtUser->get_result();
         if ($resultUser->num_rows > 0) {
@@ -363,7 +363,7 @@ class DatabaseUtil
                         WHERE 
                             ur.user_id = ?";
         $stmtProjects = $this->database->prepare($sqlProjects);
-        $stmtProjects->bind_param("ii", $userId, $userId);
+        $stmtProjects->bind_param("ii",  $userDetails['user']['user_id'], $userDetails['user']['user_id']);
         $stmtProjects->execute();
         $resultProjects = $stmtProjects->get_result();
         $userDetails['projects'] = $resultProjects->fetch_all(MYSQLI_ASSOC);
@@ -456,11 +456,13 @@ class DatabaseUtil
     COALESCE(te.total_hours, 0) AS 'Gesamte Stunden'
 FROM 
     Projects p
-LEFT JOIN 
-    UserRoles ur ON p.project_id = ur.project_id AND ur.role_id = 7
-LEFT JOIN 
+LEFT JOIN
+    (SELECT ur.project_id, ur.user_id
+     FROM UserRoles ur
+     WHERE ur.role_id = 7) ur ON p.project_id = ur.project_id
+LEFT JOIN
     Users u ON ur.user_id = u.user_id
-LEFT JOIN 
+LEFT JOIN
     ProjectStatus ps ON p.status_id = ps.status_id
 LEFT JOIN 
     (SELECT 

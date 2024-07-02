@@ -1,65 +1,64 @@
-  /* === Import template variables === */
+/* === Import template variables === */
 .mdc-button {
-  font-family: Roboto, sans-serif;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-font-smoothing: antialiased;
-  font-size: 0.875rem;
-  line-height: 2.25rem;
-  font-weight: 500;
-  letter-spacing: 0.08929em;
-  text-decoration: none;
-  text-transform: uppercase;
-  padding: 0 16px 0 16px;
-  display: inline-flex;
-  position: relative;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-  min-width: 64px;
-  height: 36px;
-  border: none;
-  outline: none;
-  /* @alternate */
-  line-height: inherit;
-  user-select: none;
-  -webkit-appearance: none;
-  overflow: hidden;
-  vertical-align: middle;
-  border-radius: 4px;
+    font-family: Arial, sans-serif;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    font-size: 0.875rem;
+    line-height: 2.25rem;
+    font-weight: 500;
+    letter-spacing: 0.08929em;
+    text-decoration: none;
+    text-transform: uppercase;
+    padding: 0 16px 0 16px;
+    display: inline-flex;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    min-width: 64px;
+    height: 36px;
+    border: none;
+    outline: none;
+    /* @alternate */
+    line-height: inherit;
+    user-select: none;
+    -webkit-appearance: none;
+    overflow: hidden;
+    vertical-align: middle;
+    border-radius: 4px;
 }
 
 #logout{
-  vertical-align: text-top;
-  padding-left: 10px  ;
-  cursor: pointer;
+    vertical-align: text-top;
+    cursor: pointer;
 }
 
 .mdc-button::-moz-focus-inner {
-  padding: 0;
-  border: 0;
+    padding: 0;
+    border: 0;
 }
 
 .mdc-button:active {
-  outline: none;
+    outline: none;
 }
 
 .mdc-button:hover {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 .mdc-button:disabled {
-  background-color: transparent;
-  color: rgba(0, 0, 0, 0.37);
-  cursor: default;
-  pointer-events: none;
+    background-color: transparent;
+    color: rgba(0, 0, 0, 0.37);
+    cursor: default;
+    pointer-events: none;
 }
 
 .mdc-button.mdc-button--dense {
-  border-radius: 4px;
+    border-radius: 4px;
 }
 
 .mdc-button:not(:disabled) {
-  background-color: transparent;
+    background-color: transparent;
 }
 
 .mdc-button .mdc-button__icon {
@@ -1267,7 +1266,7 @@ svg.mdc-button__icon {
   border-radius: 16px;
   background-color: #e0e0e0;
   color: rgba(0, 0, 0, 0.87);
-  font-family: Roboto, sans-serif;
+  font-family: Arial, sans-serif;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-size: 0.875rem;
@@ -1576,7 +1575,7 @@ svg.mdc-button__icon {
 }
 
 .mdc-data-table__content {
-  font-family: Roboto, sans-serif;
+  font-family: Arial, sans-serif;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-size: 0.875rem;
@@ -1673,7 +1672,7 @@ svg.mdc-button__icon {
 }
 
 .mdc-data-table__cell {
-  font-family: Roboto, sans-serif;
+  font-family: Arial, sans-serif;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-size: 0.875rem;
@@ -1694,7 +1693,7 @@ svg.mdc-button__icon {
 }
 
 .mdc-data-table__header-cell {
-  font-family: Roboto, sans-serif;
+  font-family: Arial, sans-serif;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-size: 0.875rem;
@@ -1968,7 +1967,7 @@ svg.mdc-button__icon {
   margin-top: 0;
   /* @alternate */
   line-height: normal;
-  font-family: Roboto, sans-serif;
+  font-family: Arial, sans-serif;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-size: 1.25rem;
@@ -2005,7 +2004,7 @@ svg.mdc-button__icon {
 }
 
 .mdc-dialog__content {
-  font-family: Roboto, sans-serif;
+  font-family: Arial, sans-serif;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-size: 1rem;
@@ -2227,7 +2226,7 @@ svg.mdc-button__icon {
 }
 
 .mdc-drawer .mdc-list-item {
-  font-family: Roboto, sans-serif;
+  font-family: Arial, sans-serif;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-size: 0.875rem;
@@ -2250,7 +2249,7 @@ svg.mdc-button__icon {
 }
 
 .mdc-drawer .mdc-list-group__subheader {
-  font-family: Roboto, sans-serif;
+  font-family: Arial, sans-serif;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-size: 0.875rem;
@@ -2318,7 +2317,7 @@ svg.mdc-button__icon {
 }
 
 .mdc-drawer__title {
-  font-family: Roboto, sans-serif;
+  font-family: Arial, sans-serif;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-size: 1.25rem;
@@ -2351,7 +2350,7 @@ svg.mdc-button__icon {
 }
 
 .mdc-drawer__subtitle {
-  font-family: Roboto, sans-serif;
+  font-family: Arial, sans-serif;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-size: 0.875rem;
@@ -2649,7 +2648,7 @@ svg.mdc-button__icon {
 }
 
 .mdc-fab--extended {
-  font-family: Roboto, sans-serif;
+  font-family: Arial, sans-serif;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-size: 0.875rem;
@@ -2820,7 +2819,7 @@ svg.mdc-button__icon {
 }
 
 .mdc-floating-label {
-  font-family: Roboto, sans-serif;
+  font-family: Arial, sans-serif;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-size: 1rem;
@@ -2886,7 +2885,7 @@ svg.mdc-button__icon {
 }
 
 .mdc-form-field {
-  font-family: Roboto, sans-serif;
+  font-family: Arial, sans-serif;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-size: 0.875rem;
@@ -3050,7 +3049,7 @@ svg.mdc-button__icon {
 }
 
 .mdc-grid-tile__support-text {
-  font-family: Roboto, sans-serif;
+  font-family: Arial, sans-serif;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-size: 1rem;
@@ -3348,7 +3347,7 @@ svg.mdc-button__icon {
 }
 
 .mdc-image-list__label {
-  font-family: Roboto, sans-serif;
+  font-family: Arial, sans-serif;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-size: 1rem;
@@ -4339,7 +4338,7 @@ svg.mdc-button__icon {
 }
 
 .mdc-list {
-  font-family: Roboto, sans-serif;
+  font-family: Arial, sans-serif;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-size: 1rem;
@@ -4463,7 +4462,7 @@ svg.mdc-button__icon {
 }
 
 .mdc-list-item__meta:not(.material-icons) {
-  font-family: Roboto, sans-serif;
+  font-family: Arial, sans-serif;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-size: 0.75rem;
@@ -4545,7 +4544,7 @@ svg.mdc-button__icon {
 }
 
 .mdc-list-item__secondary-text {
-  font-family: Roboto, sans-serif;
+  font-family: Arial, sans-serif;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-size: 0.875rem;
@@ -4711,7 +4710,7 @@ a.mdc-list-item {
 }
 
 .mdc-list-group__subheader {
-  font-family: Roboto, sans-serif;
+  font-family: Arial, sans-serif;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-size: 1rem;
@@ -5684,7 +5683,7 @@ a.mdc-list-item {
 }
 
 .mdc-select-helper-text {
-  font-family: Roboto, sans-serif;
+  font-family: Arial, sans-serif;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-size: 0.75rem;
@@ -5981,7 +5980,7 @@ a.mdc-list-item {
   padding-left: 16px;
   /* @noflip */
   padding-right: 52px;
-  font-family: Roboto, sans-serif;
+  font-family: Arial, sans-serif;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-size: 1rem;
@@ -6640,7 +6639,7 @@ a.mdc-list-item {
 }
 
 .mdc-slider__pin-value-marker {
-  font-family: Roboto, sans-serif;
+  font-family: Arial, sans-serif;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-size: 0.875rem;
@@ -6779,7 +6778,7 @@ a.mdc-list-item {
 }
 
 .mdc-snackbar__label {
-  font-family: Roboto, sans-serif;
+  font-family: Arial, sans-serif;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-size: 0.875rem;
@@ -7170,7 +7169,7 @@ a.mdc-list-item {
 }
 
 .mdc-tab {
-  font-family: Roboto, sans-serif;
+  font-family: Arial, sans-serif;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-size: 0.875rem;
@@ -7582,7 +7581,7 @@ a.mdc-list-item {
 }
 
 .mdc-text-field-helper-text {
-  font-family: Roboto, sans-serif;
+  font-family: Arial, sans-serif;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-size: 0.75rem;
@@ -7616,7 +7615,7 @@ a.mdc-list-item {
 }
 
 .mdc-text-field-character-counter {
-  font-family: Roboto, sans-serif;
+  font-family: Arial, sans-serif;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-size: 0.75rem;
@@ -7882,7 +7881,7 @@ a.mdc-list-item {
 }
 
 .mdc-text-field__input {
-  font-family: Roboto, sans-serif;
+  font-family: Arial, sans-serif;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-size: 1rem;
@@ -9277,7 +9276,7 @@ a.mdc-list-item {
 }
 
 .mdc-top-app-bar__title {
-  font-family: Roboto, sans-serif;
+  font-family: Arial, sans-serif;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-size: 1.25rem;
@@ -9497,13 +9496,13 @@ a.mdc-list-item {
 }
 
 .mdc-typography {
-  font-family: Roboto, sans-serif;
+  font-family: Arial, sans-serif;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
 }
 
 .mdc-typography--headline1 {
-  font-family: Roboto, sans-serif;
+  font-family: Arial, sans-serif;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-size: 6rem;
@@ -9515,7 +9514,7 @@ a.mdc-list-item {
 }
 
 .mdc-typography--headline2 {
-  font-family: Roboto, sans-serif;
+  font-family: Arial, sans-serif;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-size: 3.75rem;
@@ -9527,7 +9526,7 @@ a.mdc-list-item {
 }
 
 .mdc-typography--headline3 {
-  font-family: Roboto, sans-serif;
+  font-family: Arial, sans-serif;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-size: 3rem;
@@ -9539,7 +9538,7 @@ a.mdc-list-item {
 }
 
 .mdc-typography--headline4 {
-  font-family: Roboto, sans-serif;
+  font-family: Arial, sans-serif;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-size: 2.125rem;
@@ -9551,7 +9550,7 @@ a.mdc-list-item {
 }
 
 .mdc-typography--headline5 {
-  font-family: Roboto, sans-serif;
+  font-family: Arial, sans-serif;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-size: 1.5rem;
@@ -9563,7 +9562,7 @@ a.mdc-list-item {
 }
 
 .mdc-typography--headline6 {
-  font-family: Roboto, sans-serif;
+  font-family: Arial, sans-serif;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-size: 1.25rem;
@@ -9575,7 +9574,7 @@ a.mdc-list-item {
 }
 
 .mdc-typography--subtitle1 {
-  font-family: Roboto, sans-serif;
+  font-family: Arial, sans-serif;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-size: 1rem;
@@ -9587,7 +9586,7 @@ a.mdc-list-item {
 }
 
 .mdc-typography--subtitle2 {
-  font-family: Roboto, sans-serif;
+  font-family: Arial, sans-serif;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-size: 0.875rem;
@@ -9599,7 +9598,7 @@ a.mdc-list-item {
 }
 
 .mdc-typography--body1 {
-  font-family: Roboto, sans-serif;
+  font-family: Arial, sans-serif;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-size: 1rem;
@@ -9611,7 +9610,7 @@ a.mdc-list-item {
 }
 
 .mdc-typography--body2 {
-  font-family: Roboto, sans-serif;
+  font-family: Arial, sans-serif;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-size: 0.875rem;
@@ -9623,7 +9622,7 @@ a.mdc-list-item {
 }
 
 .mdc-typography--caption {
-  font-family: Roboto, sans-serif;
+  font-family: Arial, sans-serif;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-size: 0.75rem;
@@ -9635,7 +9634,7 @@ a.mdc-list-item {
 }
 
 .mdc-typography--button {
-  font-family: Roboto, sans-serif;
+  font-family: Arial, sans-serif;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-size: 0.875rem;
@@ -9647,7 +9646,7 @@ a.mdc-list-item {
 }
 
 .mdc-typography--overline {
-  font-family: Roboto, sans-serif;
+  font-family: Arial, sans-serif;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-size: 0.75rem;
@@ -23264,9 +23263,9 @@ th {
 }
 .close:hover,
 .close:focus {
-  color: black;
-  text-decoration: none;
-  cursor: pointer;
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
 }
         /* Form Styles */
         .form-group {
@@ -23300,7 +23299,7 @@ th {
     }
 
     details summary::before {
-        content: "➤"; 
+        content: "➤";
         display: inline-block;
         margin-right: 10px;
         margin-top: -10px;

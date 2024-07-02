@@ -42,6 +42,4 @@ document.addEventListener("DOMContentLoaded", function() {
     /**
      * Dark mode toggle functionality . END
      */
-
-
 });

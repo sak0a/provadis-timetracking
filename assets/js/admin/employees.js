@@ -1,4 +1,4 @@
-function sendRequest() {
+function sendUserDataRequest() {
     const currentTime = Date.now();
     if (!(currentTime - lastRequestTime >= throttleDelay)) {
         return;
@@ -138,14 +138,13 @@ function insertTableData() {
  * @param event
  * @param personalNumber
  */
-function showUserDetails(event, userId) {
+function showUserDetails(event, personalNumber) {
     event.preventDefault();
-    fetch(`users_details.php?userId=${userId}`)
+    fetch(`/admin/users_details.php?f=get_user_details&s_pn=${personalNumber}&ajax=true`)
         .then(response => response.json())
         .then(data => {
             if (data.error) {
-                console.error('Fehler:', data.error);
-                alert('Fehler: ' + data.error);
+                console.error(data.error);
             } else {
                 let detailsDiv = document.getElementById('userDetailsContent');
                 detailsDiv.innerHTML = `
@@ -322,7 +321,7 @@ function showUserDetails(event, userId) {
                 }
             }
         })
-        .catch(error => console.error('Fehler beim Abrufen der Benutzerdetails:', error));
+        .catch(error => console.error(error));
 }
 
 function createCharts(data) {
@@ -399,11 +398,11 @@ anime({
     easing: 'easeOutQuad', // Easing function for a smooth fade-in
     delay: 2 * 50 // Staggered delay for each row
 });
-sendRequest();
+sendUserDataRequest();
 // Event listener for search inputs
 searchInputs = document.querySelectorAll('.search-box input');
 searchInputs.forEach(function (input) {
-    input.addEventListener('input', sendRequest);
+    input.addEventListener('input', sendUserDataRequest);
 });
 // Event listener for pagination links
 document.addEventListener('click', function (event) {
@@ -411,6 +410,6 @@ document.addEventListener('click', function (event) {
     if (element.tagName === 'A' && element.hasAttribute('data-page')) {
         event.preventDefault();
         document.querySelector('input[name=page]').value = element.getAttribute('data-page');
-        sendRequest();
+        sendUserDataRequest();
     }
 });

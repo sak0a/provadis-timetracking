@@ -19,25 +19,13 @@ function loadDynamicScripts(tab) {
     switch (tab) {
         case 'employees':
             createDynamicScript('../assets/js/admin/employees.js');
-            createDynamicScript('../assets/js/chartjs.js');
-            createDynamicScript('../assets/js/vendor.bundle.base.js');
-            createDynamicScript('../assets/js/Chart.min.js');
-            createDynamicScript('../assets/js/anime.min.js');
             break;
         case 'statistics':
             createDynamicScript('../assets/js/admin/statistics.js');
-            createDynamicScript('../assets/js/chartjs.js');
-            createDynamicScript('../assets/js/vendor.bundle.base.js');
-            createDynamicScript('../assets/js/Chart.min.js');
-            createDynamicScript('../assets/js/anime.min.js');
             break;
         case 'projects':
-        createDynamicScript('../assets/js/admin/projects.js');
-        createDynamicScript('../assets/js/chartjs.js');
-        createDynamicScript('../assets/js/vendor.bundle.base.js');
-        createDynamicScript('../assets/js/Chart.min.js');
-        createDynamicScript('../assets/js/anime.min.js');
-        break;
+            createDynamicScript('../assets/js/admin/projects.js');
+            break;
     }
 }
 
