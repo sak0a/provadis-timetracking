@@ -468,7 +468,7 @@ LEFT JOIN
         SUM(TIMESTAMPDIFF(HOUR, start_time, end_time)) AS total_hours 
      FROM 
         TimeEntries 
-GROUP BY
+     GROUP BY 
         project_id
     ) te ON p.project_id = te.project_id
 ";
