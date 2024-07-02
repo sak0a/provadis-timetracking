@@ -22,8 +22,8 @@ function encryptCookie(string $value): string
     return encryptData($value, $key);
 }
 
-function decryptCookie(string $cookie): string|false
+function decryptCookie(string $cookie): string
 {
     $key = 'BcuIght/79AqsÜ??ßßnbgthrj-;'; // Use the same key as for encryption
-    return decryptData($cookie, $key);
+    return decryptData($cookie, $key) ?? '';
 }
