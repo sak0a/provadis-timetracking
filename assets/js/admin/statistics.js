@@ -7,8 +7,7 @@
                 let detailsDiv = document.getElementById('projectDetailsContent');
                 detailsDiv.innerHTML = data.map(project => `
                         <div class="statistic_box">
-                        <br>
-                        <details open><summary><h2>Projektdetails für ${project['Projektname']}</h2></summary>
+                        <details><summary><h1>Projektdetails für ${project['Projektname']}</h1></summary>
                         <p><table class="details-table">
                             <tr>
                                 <th>Attribut</th>
