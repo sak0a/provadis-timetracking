@@ -25,7 +25,7 @@ try {
     $db = Database::initDefault();
     $dbUtil = new DatabaseUtil($db->getConnection());
 
-    $userDetails = $dbUtil->getUserDetailsByPersonalNumber($userPersonalNumber);
+    $userDetails = $dbUtil->getUserDetails($userPersonalNumber);
 
     if ($userDetails) {
         echo json_encode($userDetails);

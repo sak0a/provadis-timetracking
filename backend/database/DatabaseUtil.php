@@ -393,31 +393,6 @@ class DatabaseUtil
         return 0;
     }
 
-
-    public function getUserDetailsByPersonalNumber($personalNumber): ?array {
-    $sql = "
-        SELECT 
-            user_id,
-            personal_number,
-            email,
-            first_name,
-            last_name,
-            birthdate,
-            role_id
-        FROM 
-            Users
-        WHERE 
-            personal_number = ?
-    ";
-    $stmt = $this->database->prepare($sql);
-    $stmt->bind_param("i", $personalNumber);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    $details = $result->fetch_assoc();
-    return $details ? $details : null;
-}
-
     // Informationen für den Nutzer aufrufen
     public function getUserDetails($personalNumber): ?array
     {
