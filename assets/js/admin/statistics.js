@@ -73,7 +73,7 @@ function createCharts(data) {
         const percentDiff = 100 - percentHours;
 
         const doughnutPieData = {
-            labels: ['Geplannte Zeit', 'Tatsächliche Zeit'],
+            labels: ['Geplannte Zeit in %', 'Tatsächliche Zeit in %'],
             datasets: [{
                 data: [percentHours, percentDiff],
                 backgroundColor: ['#ff6384', '#36a2eb'],

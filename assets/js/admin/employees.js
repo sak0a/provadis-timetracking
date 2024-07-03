@@ -303,7 +303,9 @@ function showUserDetails(event, personalNumber) {
                         </div>
                         </div>
                         </div>
-                
+                        <div class="mdc-card">
+                            <canvas id="myBarChart"></canvas>
+                        </div>
                 `;
 
                 document.getElementById('moreDetails').style.display = 'block';
@@ -314,10 +316,12 @@ function showUserDetails(event, personalNumber) {
                     script.src = 'https://cdn.jsdelivr.net/npm/chart.js';
                     script.onload = function() {
                         createCharts(data);
+                        barChart(data);
                     };
                     document.head.appendChild(script);
                 } else {
                     createCharts(data);
+                    barChart(data);
                 }
             }
         })
@@ -364,8 +368,8 @@ function createCharts(data) {
             labels: ['Aktive Arbeit', 'Allgemeine Arbeit', 'Abwesend'],
             datasets: [{
                 data: [active, generalHours, absences],
-                backgroundColor: ['#ff6384', '#36a2eb', '#cc65fe'],
-                hoverBackgroundColor: ['#ff6384', '#36a2eb', '#cc65fe']
+                backgroundColor: ['#55eb36', '#36a2eb', '#eb3636'],
+                hoverBackgroundColor: ['#55eb36', '#36a2eb', '#eb3636']
             }]
         };
 
@@ -386,7 +390,54 @@ function createCharts(data) {
     });
 }
 
+function barChart(data){
+    const ctx_1 = document.getElementById('myBarChart').getContext('2d');
+    const first_month= (1-((data.general_hours.hours_last_month_allg_Arbeit/data.hours.hours_last_month)+((data.absences.days_last_month_absences*7.5)/data.hours.hours_last_month)))*100;
+    const three_month= (1-((data.general_hours.hours_last_3_months_allg_Arbeit/data.hours.hours_last_3_months)+((data.absences.days_last_3_months_absences*7.5)/data.hours.hours_last_3_months)))*100;
+    const six_month= (1-((data.general_hours.hours_last_6_months_allg_Arbeit/data.hours.hours_last_6_months)+((data.absences.days_last_6_months_absences*7.5)/data.hours.hours_last_6_months)))*100;
+    const all_time= (1-((data.general_hours.total_hours_allg_Arbeit/data.hours.total_hours_worked)+((data.absences.total_days_absences*7.5)/data.hours.total_hours_worked)))*100;
 
+
+
+    // Define the data for the bar chart
+    const data_chart = {
+        labels: ['1 Monat', '3 Monate', '6 Monate', 'Gesamte Zeit'],
+        datasets: [{
+            label: 'Aktive Arbeit in %',
+            data: [
+                first_month, three_month, six_month, all_time
+
+
+            ],
+            backgroundColor: [
+                'rgba(99, 255, 109, 0.2)',
+                'rgba(99, 255, 109, 0.2)',
+                'rgba(99, 255, 109, 0.2)',
+                'rgba(99, 255, 109, 0.2)'
+            ],
+            borderColor: [
+                'rgba(99, 255, 109, 1)',
+                'rgba(99, 255, 109, 1)',
+                'rgba(99, 255, 109, 1)',
+                'rgba(99, 255, 109, 1)'
+            ],
+            borderWidth: 1
+        }]
+    };
+    const options = {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    };
+    new Chart(ctx_1, {
+        type: 'bar',
+        data: data_chart,
+        options: options
+    });
+}
 
 
 
