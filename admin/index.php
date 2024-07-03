@@ -1,5 +1,5 @@
 <?php
-global $base_url_admin, $base_url;
+include '../backend/config.php';
 include('../backend/Auth.php');
 
 session_start();
@@ -81,13 +81,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ajax']) && isset($_POS
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>CommerzBau</title>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
     <script src="../assets/js/anime.min.js"></script>
     <script src="../assets/js/admin.js"></script>
     <script src="../assets/js/global.js"></script>
     <link rel="stylesheet" href="../dist/css/style.purged.css">
     <link rel="stylesheet" href="../dist/css/global.css">
     <link rel="stylesheet" href="../dist/css/admin.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
     <link rel="shortcut icon" href="../assets/images/favicon.png" />
 </head>
 <body>
@@ -197,9 +201,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ajax']) && isset($_POS
             </div>
         </div>
     </div>
+    <!-- End custom js for this page-->
+</body>
 <script>
-    const BASE_URL_ADMIN = '<?php echo $base_url_admin; ?>';
-    const BASE_URL = '<?php echo $base_url; ?>';
+    const BASE_URL_ADMIN = '<?php echo Config::BASE_URL_ADMIN; ?>';
+    const BASE_URL = '<?php echo Config::BASE_URL; ?>';
     // Global Veriables
     let currentTab = '<?php echo $currentTab; ?>';
     /**
@@ -210,7 +216,4 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ajax']) && isset($_POS
     let lastRequestTime = 0;
     const throttleDelay = 200;
 </script>
-    <!-- End custom js for this page-->
-</body>
-
 </html>
