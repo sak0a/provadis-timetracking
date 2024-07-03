@@ -108,10 +108,10 @@ function insertTableData() {
         const userEntryDate = user['entry_date'];
 
         row.innerHTML = '' +
-            '<td class="pl-2 employee-number" data-pn="' + userPersonalNumber + '">' + userPersonalNumber + '</td>' +
+            '<td class="pl-2 employee-number" data-pn="' + userPersonalNumber + '"><span>' + userPersonalNumber + '</span><button>Details</button></button></td>' +
             '<td class="pl-2">' + userFirstName + '</td>' +
             '<td class="pl-2">' + userLastName + '</td>' +
-            '<td class="pl-2 employee-mail"><a href="' + userEmail + '">' + userEmail + '</a></td>' +
+            '<td class="pl-2 employee-mail"><a href="mailto:' + userEmail + '">' + userEmail + '</a></td>' +
             '<td class="pl-2">' + userRoleName + '</td>' +
             '<td class="pl-2">' + userEntryDate + '</td>';
             //'<td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">' +
@@ -139,7 +139,7 @@ function insertTableData() {
  */
 function showUserDetails(event, personalNumber) {
     event.preventDefault();
-    fetch(`users_details.php?f=get_user_details&s_pn=${personalNumber}&ajax=true`)
+    fetch(`${BASE_URL_ADMIN}users_details.php?f=get_user_details&s_pn=${personalNumber}&ajax=true`)
     //fetch(`users_details.php?s_pn=${personalNumber}`)
         .then(response => response.json())
         .then(data => {
