@@ -35,17 +35,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             Auth::setSecureCookie($email);
 
             header("Location: ../");
-            echo 'Login successful';
             exit();
         } else {
-            $_SESSION['error'] = "Incorrect password.";
+            $_SESSION['error'] = "Passwort oder E-Mail ist falsch.";
             header("Location: ../login");
-            echo 'Incorrect password';
             exit();
         }
     } else {
-        $_SESSION['error'] = "User not found.";
-        echo 'User not found.';
+        $_SESSION['error'] = "Passwort oder E-Mail ist falsch.";
+        header("Location: ../login");
         exit();
     }
 }
