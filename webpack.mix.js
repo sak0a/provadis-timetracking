@@ -11,6 +11,7 @@ const preset = require('cssnano-preset-advanced');
 
 processFile('assets/css/admin.sass');
 processFile('assets/css/global.sass');
+processFile('assets/css/login.sass');
 
 function processFile(file) {
     mix.sass(file, 'dist/css')
