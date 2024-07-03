@@ -394,6 +394,29 @@ class DatabaseUtil
     }
 
 
+    public function getUserDetailsByPersonalNumber($personalNumber): ?array {
+    $sql = "
+        SELECT 
+            user_id,
+            personal_number,
+            email,
+            first_name,
+            last_name,
+            birthdate,
+            role_id
+        FROM 
+            Users
+        WHERE 
+            personal_number = ?
+    ";
+    $stmt = $this->database->prepare($sql);
+    $stmt->bind_param("i", $personalNumber);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    $details = $result->fetch_assoc();
+    return $details ? $details : null;
+}
 
     // Informationen für den Nutzer aufrufen
     public function getUserDetails($personalNumber): ?array
@@ -606,18 +629,18 @@ LEFT JOIN
         return 0;
     }
     public function getProjectDetails($projectId) {
-        $sql = "
+        $sqlProjectDetails = "
             SELECT 
-                p.project_id AS 'id',
-                p.project_name AS 'Projektname',
-                u.user_id AS 'Projektleiter_ID',
-                u.first_name AS 'Projektleiter_Vorname',
-                u.last_name AS 'Projektleiter_Nachname',
-                p.start_date AS 'Startdatum',
-                p.end_date AS 'Enddatum',
-                ps.status_name AS 'Status',
-                p.planned_time AS 'Geplannte Zeit',
-                COALESCE(SUM(TIMESTAMPDIFF(HOUR, te.start_time, te.end_time)), 0) AS 'Gesamte Stunden'
+                p.project_id AS projekt_id,
+                p.project_name AS projektname,
+                u.user_id AS projektleiter_id,
+                u.first_name AS projektleiter_vorname,
+                u.last_name AS projektleiter_nachname,
+                p.start_date AS startdatum,
+                p.end_date AS enddatum,
+                ps.status_name AS status,
+                p.planned_time AS geplannte_zeit,
+                COALESCE(SUM(TIMESTAMPDIFF(HOUR, te.start_time, te.end_time)), 0) AS gesamte_stunden
             FROM 
                 Projects p
             LEFT JOIN 
@@ -641,12 +664,38 @@ LEFT JOIN
                 ps.status_name, 
                 p.planned_time
         ";
-        $stmt = $this->database->prepare($sql);
+    
+        $stmt = $this->database->prepare($sqlProjectDetails);
+        $stmt->bind_param("i", $projectId);
+        $stmt->execute();
+        $result = $stmt->get_result();        
+        //$details = $result->fetch_assoc();
+        $details["getProjectDetails"] = $result->fetch_assoc();
+
+        $sqlProjectWorkers = "
+            SELECT 
+                u.user_id,
+                u.first_name,
+                u.last_name
+            FROM 
+                Users u
+            INNER JOIN 
+                UserRoles ur ON u.user_id = ur.user_id
+            WHERE 
+                ur.project_id = ?
+        ";
+    
+        $stmt = $this->database->prepare($sqlProjectWorkers);
         $stmt->bind_param("i", $projectId);
         $stmt->execute();
         $result = $stmt->get_result();
+        
+        $workers = [];
+        while ($row = $result->fetch_assoc()) {
+            $workers[] = $row;
+        }
     
-        $details = $result->fetch_assoc();
+        $details['workers'] = $workers;
         return $details;
     }
     public function getTotalProjectCount(): int
@@ -709,12 +758,12 @@ LEFT JOIN
     // CRUD-Methoden für Zeiterfassungen (Time Entries)
 
     // Erstellen eines Zeiteintrags
-    public function createTimeEntry($user_id, $project_id, $task_id, $start_time, $end_time, $description, $approved_by)
+    public function createTimeEntry($user_id, $project_id, $task_id, $start_time, $end_time, $approved_by)
     {
-        $duration = $end_time->diff($start_time)->format('%H:%I:%S');
-        $sql = "INSERT INTO TimeEntries (user_id, project_id, task_id, start_time, end_time, duration, description, approved_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        
+        $sql = "INSERT INTO TimeEntries (user_id, project_id, task_id, start_time, end_time, approved_by) VALUES (?, ?, ?, ?, ?, ?)";
         $stmt = $this->database->prepare($sql);
-        return $stmt->execute([$user_id, $project_id, $task_id, $start_time->format('Y-m-d H:i:s'), $end_time->format('Y-m-d H:i:s'), $duration, $description, $approved_by]);
+        return $stmt->execute([$user_id, $project_id, $task_id, $start_time, $end_time, $approved_by]);
     }
 
     // Abrufen eines Zeiteintrags
@@ -741,6 +790,115 @@ LEFT JOIN
         $sql = "DELETE FROM TimeEntries WHERE time_entry_id = ?";
         $stmt = $this->database->prepare($sql);
         return $stmt->execute([$time_entry_id]);
+    }
+
+    public function getProjectName($user_id): array
+    {
+        $sql = "SELECT 
+                p.project_id,
+                p.project_name AS 'Projektname'
+            FROM 
+                Projects p
+            LEFT JOIN 
+                UserRoles ur ON p.project_id = ur.project_id
+            LEFT JOIN 
+                Users u ON ur.user_id = u.user_id
+            WHERE 
+                u.user_id = ?";
+
+        $stmt = $this->database->prepare($sql);
+        $stmt->bind_param("i", $user_id);  // Bindung des Parameters user_id
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $projects = [];
+        while ($row = $result->fetch_assoc()) {
+            $projects[] = $row;  // Speichert nur den Projektnamen
+        }
+        $stmt->close();  // Schließen des Statements
+        return $projects;
+    }
+    public function getTaskName($user_id): array
+    {
+        $sql = "SELECT 
+                t.task_name AS 'Taskname'
+            FROM 
+                Tasks t
+            INNER JOIN 
+                UserRoles ur ON t.project_id = ur.project_id
+            INNER JOIN  
+                Users u ON ur.user_id = u.user_id
+            WHERE 
+                u.user_id = ?";
+
+        $stmt = $this->database->prepare($sql);
+        $stmt->bind_param("i", $user_id);  // Bindung des Parameters user_id
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $tasks = [];
+        while ($row = $result->fetch_assoc()) {
+            $tasks[] = $row;  // Speichert nur den Projektnamen
+        }
+        $stmt->close();  // Schließen des Statements
+        return $tasks;
+    }
+    public function getTableContent($user_id): array
+    {
+        $sql = "SELECT 
+                p.project_name AS 'Projektname',
+                t.task_name AS 'Taskname',
+                ti.start_time AS 'Datum',
+                ti.start_time AS 'StartZeit',
+                ti.end_time AS 'EndZeit'
+            FROM 
+                Projects p
+            INNER JOIN
+                Tasks t ON t.project_id = p.project_id
+            INNER JOIN 
+                UserRoles ur ON t.project_id = ur.project_id
+            INNER JOIN  
+                Users u ON ur.user_id = u.user_id
+            INNER JOIN
+                TimeEntries ti ON u.user_id = ti.user_id
+            WHERE 
+                u.user_id = ?";
+
+        $stmt = $this->database->prepare($sql);
+        $stmt->bind_param("i", $user_id);  // Bindung des Parameters user_id
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $tableContent = [];
+        while ($row = $result->fetch_assoc()) {
+            $tableContent[] = $row;  // Speichert nur den Projektnamen
+        }
+        $stmt->close();  // Schließen des Statements
+        return $tableContent;
+    }
+
+    public function getTasksByProject($projectId) {
+        $sql = "SELECT task_id, task_name FROM Tasks WHERE project_id = ?";
+        $stmt = $this->database->prepare($sql);
+        $stmt->bind_param("i", $projectId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+    public function getResponsiblePersons($projectId) {
+        $sql = "SELECT u.user_id, CONCAT(u.first_name, ' ', u.last_name) AS name 
+            FROM Users u
+            JOIN UserRoles ur ON u.user_id = ur.user_id
+            WHERE ur.project_id = ? AND u.role_id = 7
+        ";
+        $stmt = $this->database->prepare($sql);
+        $stmt->bind_param("i", $projectId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $responsiblePersons = [];
+        while ($row = $result->fetch_assoc()) {
+            $responsiblePersons[] = $row;
+        }
+
+        return $responsiblePersons;
     }
 }
 ?>
