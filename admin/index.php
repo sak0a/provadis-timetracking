@@ -1,4 +1,5 @@
 <?php
+global $base_url_admin, $base_url;
 include('../backend/Auth.php');
 
 session_start();
@@ -139,16 +140,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ajax']) && isset($_POS
                         </div>
                     </nav>
                 </div>
-                <div class="profile-actions">
-                    <a href="/">Mitarbeiteransicht</a>
-                    <span class="divider"></span>
-                    <form method="post">
-                        <button type="submit" class="anmeldung_form" id="logout" name="logout">
-                            Abmelden
-                        </button>
-                    </form>
-                </div>
-
             </div>
         </aside>
         <!-- partial -->
@@ -208,12 +199,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ajax']) && isset($_POS
         </div>
     </div>
 <script>
+    const BASE_URL_ADMIN = '<?php echo $base_url_admin; ?>';
+    const BASE_URL = '<?php echo $base_url; ?>';
     // Global Veriables
     let currentTab = '<?php echo $currentTab; ?>';
     /**
      * Global Variables for Employee Tab
      */
-    let responseData = [];
+    let respvonseData = [];
     let searchInputs;
     let lastRequestTime = 0;
     const throttleDelay = 200;

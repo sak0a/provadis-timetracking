@@ -12,7 +12,7 @@ function sendUserDataRequest() {
     const orderType = 'desc';
     const page = document.querySelector('input[name=page]')?.value || '1';
     let xhr = new XMLHttpRequest();
-    xhr.open('GET', 'employees.php?f=get_emps' +
+    xhr.open('GET', BASE_URL_ADMIN + 'employees.php?f=get_emps' +
         '&s_pn=' + searchPersonalNumber +
         '&s_fn=' + searchFirstName +
         '&s_ln=' + searchLastName +
@@ -109,9 +109,9 @@ function insertTableData() {
 
         row.innerHTML = '' +
             '<td class="pl-2 employee-number" data-pn="' + userPersonalNumber + '">' + userPersonalNumber + '</td>' +
-            '<td class="pl-2 transition-colors duration-250 hover:text-[#B68764]">' + userFirstName + '</td>' +
+            '<td class="pl-2">' + userFirstName + '</td>' +
             '<td class="pl-2">' + userLastName + '</td>' +
-            '<td class="pl-2">' + userEmail + '</td>' +
+            '<td class="pl-2 employee-mail"><a href="' + userEmail + '">' + userEmail + '</a></td>' +
             '<td class="pl-2">' + userRoleName + '</td>' +
             '<td class="pl-2">' + userEntryDate + '</td>';
             //'<td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">' +
@@ -119,7 +119,6 @@ function insertTableData() {
             //'</td>';
         tableBody.appendChild(row);
         row.querySelector(`.employee-number[data-pn="${userPersonalNumber}"]`).addEventListener('click', function (event) {
-            console.log("MODAL FOR " + userPersonalNumber)
             showUserDetails(event, userPersonalNumber);
         });
         anime({

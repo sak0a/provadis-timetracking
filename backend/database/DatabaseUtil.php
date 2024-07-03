@@ -1,7 +1,7 @@
 <?php
 namespace backend\database;
-use mysqli;
 use backend\database\Filter;
+use mysqli;
 
 
 class DatabaseUtil
@@ -12,6 +12,96 @@ class DatabaseUtil
     {
         $this->database = $db;
     }
+
+    public function getProjectCountByFilter(Filter $filter): int
+    {
+        $sql = "SELECT COUNT(project_id) AS total FROM Projects";
+        if ($filter->hasFilters())
+            $sql .= $filter->toWhereSQL();
+        $result = $this->database->query($sql);
+        if ($row = $result->fetch_assoc()) {
+            return $row['total'];
+        }
+        return 0;
+    }
+
+    public function getLeadersByProjectId($projectId): array
+    {
+        $stmt = $this->database->prepare("
+            SELECT u.user_id as id, u.first_name, u.last_name
+            FROM UserRoles ur
+            JOIN Users u ON ur.user_id = u.user_id
+            WHERE ur.project_id = ? AND ur.role_id = (SELECT role_id FROM Roles WHERE role_name = 'Projektverantwortlicher')
+        ");
+        $stmt->bind_param("i", $projectId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $leaders = $result->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
+        return $leaders;
+    }
+
+    public function getEmployeesByProjectId($projectId): array
+    {
+        $stmt = $this->database->prepare("
+            SELECT u.user_id as id, u.first_name, u.last_name
+            FROM UserRoles ur
+            JOIN Users u ON ur.user_id = u.user_id
+            WHERE ur.project_id = ? AND ur.role_id = (SELECT role_id FROM Roles WHERE role_name = 'Mitarbeiter')
+        ");
+        $stmt->bind_param("i", $projectId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $employees = $result->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
+        return $employees;
+    }
+
+    public function getTasksByProjectId($projectId): array
+    {
+        $stmt = $this->database->prepare("
+            SELECT t.task_id as id, t.task_name as name
+            FROM Tasks t
+            WHERE project_id = ?
+        ");
+        $stmt->bind_param("i", $projectId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $tasks = $result->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
+        return $tasks;
+    }
+
+    public function getUserIdsByRole($leaders) {
+        $leaderArray = explode(',', $leaders);
+        $placeholders = implode(',', array_fill(0, count($leaderArray), '?'));
+        $leaderParams = array_map(function($leader) { return "%$leader%"; }, $leaderArray);
+
+        $query = "
+            SELECT DISTINCT ur.project_id
+            FROM UserRoles ur
+            JOIN Users u ON ur.user_id = u.user_id
+            WHERE ur.role_id = (SELECT role_id FROM Roles WHERE role_name = 'leader') 
+            AND (" . implode(' OR ', array_fill(0, count($leaderArray), "(u.first_name LIKE ? OR u.last_name LIKE ?)")) . ")
+        ";
+
+        $stmt = $this->database->prepare($query);
+
+        // Bind the parameters dynamically
+        $types = str_repeat('s', count($leaderParams) * 2);
+        $params = [];
+        foreach ($leaderParams as $leader) {
+            $params[] = $leader;
+            $params[] = $leader;
+        }
+        $stmt->bind_param($types, ...$params);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $projectIds = $result->fetch_all(MYSQLI_COLUMN, 0);
+        $stmt->close();
+        return $projectIds;
+    }
+
 
     // START ROLES ------------------------------------------------------------------------------------------------
     public function getRole($name): false|array|null
@@ -147,6 +237,28 @@ class DatabaseUtil
         $result = $stmt->get_result();
         return $result->fetch_assoc();
     }
+    public function getProjectStatusById($id): array
+    {
+        $sql = "SELECT * FROM ProjectStatus WHERE status_id = ?";
+        $stmt = $this->database->prepare($sql);
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_assoc();
+    }
+    public function getProjectStatusLike($name): array
+    {
+        $sql = "SELECT * FROM ProjectStatus WHERE status_name LIKE ?";
+        $stmt = $this->database->prepare($sql);
+        $stmt->bind_param("s", $name);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $roles = [];
+        while ($row = $result->fetch_assoc()) {
+            $roles[] = $row;
+        }
+        return $roles;
+    }
     public function getAllProjectStatuses(): array
     {
         $sql = "SELECT * FROM ProjectStatus";
@@ -199,7 +311,6 @@ class DatabaseUtil
         $result = $stmt->get_result();
         return $result->fetch_assoc() !== null;
     }
-
     public function getUserByEmail($email): false|array|null
     {
         $sql = "SELECT * FROM Users WHERE email = ?";
@@ -209,8 +320,6 @@ class DatabaseUtil
         $result = $stmt->get_result();
         return $result->fetch_assoc();
     }
-
-    // Erstellen eines Benutzers
     public function createUser($personal_number, $email, $firstName, $lastName, $birthdate, $password, $role, $entry_date): bool
     {
         $passwordHash = password_hash($password, PASSWORD_BCRYPT);
@@ -218,8 +327,6 @@ class DatabaseUtil
         $stmt = $this->database->prepare($sql);
         return $stmt->execute([$personal_number, $email, $firstName, $lastName, $birthdate, $passwordHash, $role, $entry_date]);
     }
-
-    // Abrufen eines Benutzers
     public function getUser($user_id): ?bool
     {
         $sql = "SELECT * FROM Users WHERE user_id = ?";
@@ -227,7 +334,6 @@ class DatabaseUtil
         $stmt->execute([$user_id]);
         return $stmt->fetch();
     }
-    
     public function getAllUsers() {
         $sql = "SELECT * FROM Users";
         $stmt = $this->database->prepare($sql);
@@ -238,8 +344,7 @@ class DatabaseUtil
             $users[] = $row;
         }
         return $users;
-    }  
-
+    }
     // Bearbeiten eines Benutzers
     public function updateUser($user_id, $firstName, $lastName, $email, $role)
     {
@@ -248,7 +353,10 @@ class DatabaseUtil
         return $stmt->execute([$firstName, $lastName, $email, $role, $user_id]);
     }
 
-    // Löschen eines Benutzers
+    /**
+     * @param $user_id
+     * @return bool
+     */
     public function deleteUser($user_id): bool
     {
         $sql = "DELETE FROM Users WHERE user_id = ?";
@@ -256,6 +364,9 @@ class DatabaseUtil
         return $stmt->execute([$user_id]);
     }
 
+    /**
+     * @return int
+     */
     public function getTotalUserCount(): int
     {
         $sql = "SELECT COUNT(user_id) AS total FROM Users";
@@ -266,6 +377,10 @@ class DatabaseUtil
         return 0;
     }
 
+    /**
+     * @param Filter $filter
+     * @return int
+     */
     public function getUserCountByFilter(Filter $filter): int
     {
         $sql = "SELECT COUNT(*) AS total FROM Users";
@@ -395,15 +510,7 @@ class DatabaseUtil
 
         return $userDetails;
     }
-
-    /**
-     * @param Filter $filter Filter to apply
-     * @param Number $page Page number
-     * @param Number $pageSize Number of messages per page
-     * @param String $order Order of the messages
-     * @return array Message that match a filter
-     */
-    function getUsersByFilter(Filter $filter, $page, $pageSize, $order): array
+    public function getUsersByFilter(Filter $filter, $page, $pageSize, $order): array
     {
         $messages = array();
 
@@ -436,8 +543,10 @@ class DatabaseUtil
         return $messages;
     }
 
-    // CRUD-Methoden für Projekte
 
+
+
+    // CRUD-Methoden für Projekte
     public function projectExists($project_name): false|array|null
     {
         $sql = "SELECT project_name FROM Projects WHERE project_name = ?";
@@ -455,8 +564,6 @@ class DatabaseUtil
         $stmt = $this->database->prepare($sql);
         return $stmt->execute([$project_name, $start_date, $status_id]);
     }
-
-    // Abrufen eines Projekts
     public function getProject($project_id): ?bool
     {
         $sql = "SELECT * FROM Projects WHERE project_id = ?";
@@ -464,8 +571,6 @@ class DatabaseUtil
         $stmt->execute([$project_id]);
         return $stmt->fetch();
     }
-
-
     public function getAllProjects(): array
     {
         $sql = "SELECT 
@@ -508,7 +613,21 @@ LEFT JOIN
         }
         return $projects;
     }
-
+    public function getProjectTotalHours($projectId) {
+        $stmt = $this->database->prepare("
+            SELECT COALESCE(SUM(TIMESTAMPDIFF(HOUR, te.start_time, te.end_time)), 0) AS total_hours
+            FROM TimeEntries te
+            WHERE te.project_id = ?
+        ");
+        $stmt->bind_param("i", $projectId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($row = $result->fetch_assoc()) {
+            $stmt->close();
+            return $row['total_hours'];
+        }
+        return 0;
+    }
     public function getProjectDetails($projectId) {
         $sqlProjectDetails = "
             SELECT 
@@ -579,7 +698,47 @@ LEFT JOIN
         $details['workers'] = $workers;
         return $details;
     }
-    
+    public function getTotalProjectCount(): int
+    {
+        $sql = "SELECT COUNT(project_id) AS total FROM Projects";
+        $result = $this->database->query($sql);
+        if ($row = $result->fetch_assoc()) {
+            return $row['total'];
+        }
+        return 0;
+    }
+    public function getProjectsByFilter(Filter $filter, $page, $pageSize, $order): array
+    {
+        $projects = array();
+
+        $sql = "SELECT * FROM Projects";
+
+        if ($filter->hasFilters())
+            $sql .= $filter->toWhereSQL();
+
+        $offset = ($page - 1) * $pageSize;
+        $sql .= " ORDER BY project_id $order";
+        $sql .= " LIMIT $offset, $pageSize";
+
+        $result = $this->database->query($sql);
+
+        // page 90 (results 891-900) does not exist, so we get page the actual size of the query with the same filter and then remove 10 from
+        if ($result->num_rows <= 0) {
+            $realProjectCount = $this->getProjectCountByFilter($filter);
+            if ($realProjectCount > 0)
+                // pagesize keeps the same but the page
+                // only 783 results exists, so we divide 783 by 10 and get 78.3, then we subtract 1 and get 77.3, then we round down to 77 and get 770 results, which is the last page
+                return $this->getProjectsByFilter($filter, round($realProjectCount / 10, 0, PHP_ROUND_HALF_DOWN) - 1, $pageSize, $order);
+            else
+                return $projects;
+        }
+        while ($row = $result->fetch_assoc()) {
+            $projects[] = $row;
+        }
+        return $projects;
+    }
+
+
     // Bearbeiten eines Projekts
     public function updateProject($project_id, $project_name, $start_date, $end_date, $status_id)
     {
