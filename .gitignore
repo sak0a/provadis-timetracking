@@ -11,3 +11,4 @@ admin/statistics11.php
 dist/
 admin/dashboard4.php
 backend/database/DatabaseUtil-alex.php
+backend/config.php
