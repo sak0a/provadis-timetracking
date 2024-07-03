@@ -23309,7 +23309,7 @@ h1 {
                 gap: 20px;
             }
             .statistic_box {
-                flex: 1 1 calc(50% - 20px);
+                flex: 1 1 calc(33% - 20px);
                 box-sizing: border-box;
                 padding: 20px;
                 border: 1px solid #ccc;
