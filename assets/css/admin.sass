@@ -3,30 +3,27 @@
 @tailwind utilities
 
 .employee-container, .projects-container
-    padding: 2rem
+    @apply p-8
     .employee-header, .projects-header
-        @apply flex items-center justify-between
+        @apply flex items-center justify-between font-medium
         p
             @apply text-black font-semibold
         h1 
-            @apply text-xl text-[#F7CD45]
+            @apply text-primary text-xl
         .title 
             @apply text-left text-2xl leading-6
         .description 
             @apply mt-2 text-sm text-black
         .add-employee-btn, .add-project-btn
-            @apply bg-secondary text-white
+            @apply bg-secondary text-primary px-4 py-2 text-md inline-flex cursor-pointer -mt-0.5
+            box-shadow: 0 6px 18px -5px #172C3A
             transition: background 0.3s ease-in-out, box-shadow 0.3s ease-in-out
-            display: inline-flex
             justify-content: end
             border-radius: 50px
-            cursor: pointer
-            padding: 0.5rem 1rem
-            font-size: 16px
-            margin-top: -2px
-            box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.4)
-            &:hover 
-                box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12)
+            font-size: 16px // unused text-md
+            &:hover
+                box-shadow: 0 2px 14px -5px #172C3A
+
     .employee-main-container, .projects-main-container
         @apply p-6 bg-white rounded-[20px]
     .employee-table-wrapper, .projects-table-wrapper
@@ -41,27 +38,30 @@
                     @apply grid place-items-center h-full w-12 text-gray-300
                 input 
                     @apply h-full w-full outline-none text-sm text-gray-700 pr-2
-        .table-head-titles 
+        .table-head-titles
             th 
                 @apply py-3.5 pl-2 text-left text-sm font-semibold text-black
         #tableBody 
             @apply divide-y divide-secondary
-            .employee-number
-                @apply hover:text-primary
-            .employee-mail
-                @apply hover:text-primary
+            tr
+                .employee-number
+                    @apply flex justify-items-end
+                    button
+                        @apply bg-secondary text-primary ml-3 rounded-lg px-2.5 py-0.5
+                .employee-mail
+                    @apply hover:text-primary transition-all duration-300 ease-in-out
+                .employee-mail a
+                    @apply hover:px-3 hover:py-1 hover:bg-secondary hover:rounded-xl
             td 
                 font-weight: 500
                 @apply whitespace-nowrap text-base text-secondary py-3
-.admin-top-bar 
+
+
+.admin-top-bar
+    @apply items-center flex justify-between bg-white text-white
     transition: background-color 0.3s ease-in-out
     box-shadow: 0 10px 13px -7px #000000
-    align-items: center
     padding: 1rem 2rem
-    color: #fff
-    background: #fff
-    justify-content: space-between
-    display: flex
     .col-left 
         flex: 1
         display: flex
@@ -69,7 +69,7 @@
         align-items: center
     .col-middle 
         flex: 2
-    .col-right 
+    .col-right
         flex: 1
         display: flex
         justify-content: flex-end
@@ -114,9 +114,9 @@
     body 
         @apply bg-[#2E2E2E] text-black
     .employee-container, .projects-container
-        background: #2E2E2E
+        @apply bg-dark-secondary
         .employee-main-container, .projects-main-container
-            background: #202020
+            @apply bg-dark-primary
         .employee-header, .projects-header
             .title 
                 @apply text-primary
