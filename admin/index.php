@@ -18,6 +18,7 @@ if (!Auth::isLoggedIn()) {
 $currentTab = "dashboard";
 
 $user = $_SESSION['user'];
+$benutzerId=htmlspecialchars($user['user_id']);
 $benutzerFirstName = htmlspecialchars($user['first_name']);
 $benutzerLastName = htmlspecialchars($user['last_name']);
 $benutzerEmail = htmlspecialchars($user['email']);

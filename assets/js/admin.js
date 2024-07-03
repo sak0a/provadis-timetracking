@@ -25,6 +25,9 @@ function loadDynamicScripts(tab) {
             break;
         case 'projects':
             createDynamicScript('../assets/js/admin/projects.js');
+        break;
+        case 'dashboard':
+            createDynamicScript('../assets/js/admin/dashboard.js');
             break;
     }
 }
