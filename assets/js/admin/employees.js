@@ -158,8 +158,7 @@ function createChart(time, data) {
 
 function handleShowUserDetailsModal(userPersonalNumber) {
     let userDetails = [];
-    event.preventDefault();
-    fetch(`${BASE_URL_ADMIN}users_details.php?f=get_user_details&s_pn=${userPersonalNumber}&ajax=true`)
+    fetch(`${BASE_URL_ADMIN}../api/users_details.php?f=get_user_details&s_pn=${userPersonalNumber}&ajax=true`)
         //fetch(`users_details.php?s_pn=${personalNumber}`)
         .then(response => response.json())
         .then(data => {
@@ -175,7 +174,7 @@ function handleShowUserDetailsModal(userPersonalNumber) {
     const leftTabButtons = document.querySelectorAll('.left-tab-button');
     const rightTabButtons = document.querySelectorAll('.right-tab-button');
     const leftTabContents = document.querySelectorAll('.tab-content[data-content="1"], .tab-content[data-content="2"], .tab-content[data-content="3"], .tab-content[data-content="4"], .tab-content[data-content="5"]');
-    const rightTabContents = document.querySelectorAll('.tab-content[data-content="6"], .tab-content[data-content="7"], .tab-content[data-content="8"], .tab-content[data-content="9"]');
+    const rightTabContents = document.querySelectorAll('.tab-content[data-content="6"], .tab-content[data-content="7"], .tab-content[data-content="8"], .tab-content[data-content="9"], .tab-content[data-content="10"]');
 
     function calculateButtonPosition(button) {
         const rect = button.getBoundingClientRect();
@@ -253,7 +252,7 @@ function handleShowUserDetailsModal(userPersonalNumber) {
 
         if (tab === '1') {
             content.innerHTML = `<div class="grid grid-cols-2 grid-rows-2 gap-4">
-<div class="col-start-1 row-start-2">
+<div class="col-start-1 row-start-1">
     <h2>Benutzerdetails</h2>
     <table class="min-w-full divide-y divide-gray-200">
                     <tr>
@@ -282,7 +281,7 @@ function handleShowUserDetailsModal(userPersonalNumber) {
                     </tr>
                 </table>
  </div>
- <div class="col-start-1 row-start-1">
+ <div class="col-start-2 row-start-1">
  <h2>Arbeitsstunden</h2>
  <table class="details-table">
                     <tr>
@@ -308,7 +307,7 @@ function handleShowUserDetailsModal(userPersonalNumber) {
                     </tr>
                 </table>
  </div>
- <div class="col-start-2 row-start-1">
+ <div class="col-start-1 row-start-2">
     <h2>Allgemeine arbeit</h2>
   <table class="details-table">
                     <tr>
@@ -333,7 +332,7 @@ function handleShowUserDetailsModal(userPersonalNumber) {
                     </tr>
                  </table>
  </div>
- <div
+ <div>
         <h2>Abwesenheiten</h2>
      <table class="details-table">
                     <tr>
@@ -397,9 +396,12 @@ function handleShowUserDetailsModal(userPersonalNumber) {
         } else if (tab === '9') {
             content.innerHTML = `<canvas id="pieChart_total">Monat</canvas>`;
             createChart('total', userDetails);
-
+        } else if (tab === '10') {
+            content.innerHTML = `<canvas id="myBarChart">Monat</canvas>`;
+            createBarChart(userDetails, content);
         }
     }
+
 
 
 
@@ -417,7 +419,6 @@ function handleShowUserDetailsModal(userPersonalNumber) {
             const tab = button.getAttribute('data-tab');
             const content = document.querySelector(`.tab-content[data-content="${tab}"]`);
             loadTab(tab, content);
-
             activateRightTab(button, content);
         });
     });
@@ -432,6 +433,53 @@ function handleShowUserDetailsModal(userPersonalNumber) {
         loadTab('6', document.querySelector('.tab-content[data-content="6"]'));
         activateRightTab(rightTabButtons[0], document.querySelector('.tab-content[data-content="6"]'));
     }, 500);
+}
+
+function createBarChart(data){
+    const ctx_1 = document.getElementById('myBarChart').getContext('2d');
+    const first_month= (1-((data.general_hours.hours_last_month_allg_Arbeit/data.hours.hours_last_month)+((data.absences.days_last_month_absences*7.5)/data.hours.hours_last_month)))*100;
+    const three_month= (1-((data.general_hours.hours_last_3_months_allg_Arbeit/data.hours.hours_last_3_months)+((data.absences.days_last_3_months_absences*7.5)/data.hours.hours_last_3_months)))*100;
+    const six_month= (1-((data.general_hours.hours_last_6_months_allg_Arbeit/data.hours.hours_last_6_months)+((data.absences.days_last_6_months_absences*7.5)/data.hours.hours_last_6_months)))*100;
+    const all_time= (1-((data.general_hours.total_hours_allg_Arbeit/data.hours.total_hours_worked)+((data.absences.total_days_absences*7.5)/data.hours.total_hours_worked)))*100;
+
+    // Define the data for the bar chart
+    const data_chart = {
+        labels: ['1 Monat', '3 Monate', '6 Monate', 'Gesamte Zeit'],
+        datasets: [{
+            label: 'Aktive Arbeit in %',
+            data: [
+                first_month, three_month, six_month, all_time
+
+
+            ],
+            backgroundColor: [
+                'rgba(99, 255, 109, 0.2)',
+                'rgba(99, 255, 109, 0.2)',
+                'rgba(99, 255, 109, 0.2)',
+                'rgba(99, 255, 109, 0.2)'
+            ],
+            borderColor: [
+                'rgba(99, 255, 109, 1)',
+                'rgba(99, 255, 109, 1)',
+                'rgba(99, 255, 109, 1)',
+                'rgba(99, 255, 109, 1)'
+            ],
+            borderWidth: 1
+        }]
+    };
+    const options = {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    };
+    new Chart(ctx_1, {
+        type: 'bar',
+        data: data_chart,
+        options: options
+    });
 }
 
 // Animation for fade-in effect

@@ -74,7 +74,7 @@ function insertContentTablePagination() {
     if (currentPage > 1) {
         const element = document.createElement('a');
         element.setAttribute('data-page', '1');
-        element.className = "relative inline-flex items-center rounded-l-md text-gray-400 px-1.5 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0";
+        element.className = "";
         element.innerHTML = '<';
         navigation.appendChild(element);
     }
@@ -85,7 +85,7 @@ function insertContentTablePagination() {
         if (i === currentPage) {
             element.className = getPaginationClass(currentPage, totalPages) + " relative z-10 inline-flex px-1.5 items-center bg-[#B68764] text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600";
         } else {
-            element.className = " relative hidden items-center text-sm font-normal px-1.5 text-gray-600 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 md:inline-flex";
+            element.className = "";
         }
         if (responseData['total_results'] <= responseData['page_size']) {
             element.classList.add('rounded-md')

@@ -19,7 +19,9 @@
     #close-button
         width: 36px
         height: 36px
-        @apply -top-4 -right-4 pt-0.5 absolute text-2xl text-center cursor-pointer bg-black text-white rounded-full
+        @apply -top-4 -right-4 pt-0.5 absolute text-2xl text-center cursor-pointer bg-secondary text-primary rounded-full transition-all ease-in-out duration-300
+        &:hover
+            @apply shadow-sm shadow-secondary
 .employee-container, .projects-container
     @apply p-8
     .employee-header, .projects-header
@@ -62,9 +64,9 @@
             @apply divide-y divide-secondary
             tr
                 .employee-number
-                    @apply flex justify-items-end
+                    @apply flex justify-between pr-8
                     button
-                        @apply bg-secondary text-primary ml-3 rounded-lg px-2.5 py-0.5
+                        @apply bg-secondary text-primary ml-3 rounded-full px-2.5 py-0.5
                 .employee-mail
                     @apply hover:text-primary transition-all duration-300 ease-in-out
                 .employee-mail a
@@ -151,7 +153,7 @@
                     @apply text-gray-300
     .admin-top-bar 
         @apply text-white bg-[#202020]
-        .employee-name, .employee-number 
-            color: #cdcdcd
+        .employee-name, .employee-number
+            @apply text-[#cdcdcd]
         .employee-view-btn, .logout-btn 
             @apply text-white bg-black

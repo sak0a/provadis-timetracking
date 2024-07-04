@@ -2,7 +2,7 @@
 function fetchTasks(projectId, tasksElementId) {
     // Define the URLs based on your conditions
     const urls = [        
-        `../api/get_tasks.php?projectId=${projectId}`
+        `${BASE_URL_ADMIN}../api/get_tasks.php?projectId=${projectId}`
     ];
 
     let fetchSuccessful = false;
@@ -52,7 +52,7 @@ document.getElementById('project2').addEventListener('change', function() {
 
     document.getElementById('project2').addEventListener('change', function() {
 var projectId = this.value;
-fetch(`../api/get_responsible_persons.php?project_id=${projectId}`)
+fetch(`${BASE_URL_ADMIN}../api/get_responsible_persons.php?project_id=${projectId}`)
     .then(response => response.json())
     .then(data => {
         var tasksSelect = document.getElementById('approved_by');
@@ -77,7 +77,7 @@ function handleButtons() {
         button.addEventListener('click', function() {
             const timeEntryId = this.getAttribute('data-id');
             if (confirm('Are you sure you want to delete this entry?')) {
-                fetch('../api/delete_time_entry.php', {
+                fetch(`${BASE_URL_ADMIN}../api/delete_time_entry.php`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded'

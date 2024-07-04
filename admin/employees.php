@@ -336,11 +336,13 @@ function getUsersAJAX(): string {
                     <button class="right-tab-button flex-grow px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded" data-tab="7">3 Monate</button>
                     <button class="right-tab-button flex-grow px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded" data-tab="8">6 Monate</button>
                     <button class="right-tab-button flex-grow px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded" data-tab="9">Gesamte Zeit</button>
+                    <button class="right-tab-button flex-grow px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded" data-tab="10">Produktivität</button>
                 </div>
                 <div class="tab-content hidden" data-content="6"></div>
                 <div class="tab-content hidden" data-content="7"></div>
                 <div class="tab-content hidden" data-content="8"></div>
                 <div class="tab-content hidden" data-content="9"></div>
+                <div class="tab-content hidden" data-content="10"></div>
             </div>
         </div>
          <i id="close-button" class="material-icons" style="z-index: 100;">close</i>
