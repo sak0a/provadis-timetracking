@@ -13,7 +13,7 @@ function minify(filePath, outputFilePath) {
     const css = fs.readFileSync(filePath, 'utf8');
     postcss([
         purgecss({
-            content: ['./admin/**/*.php', './login/**/*.php', './index.php', './assets/js/**/*.js'],
+            content: ['./admin/**/*.php', './login/**/*.php', './index.php', './assets/js/**/*.js', './admin/index.php'],
             defaultExtractor: content => content.match(/[\w-/:]+(?<!:)/g) || []
         }),
         cssnano({

@@ -207,13 +207,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ajax']) && isset($_POS
 <script>
     const BASE_URL_ADMIN = '<?php echo Config::BASE_URL_ADMIN; ?>';
     const BASE_URL = '<?php echo Config::BASE_URL; ?>';
+    const BASE_URL_LEADER = '<?php echo Config::BASE_URL_LEADER; ?>';
     // Global Veriables
     let currentTab = '<?php echo $currentTab; ?>';
     /**
      * Global Variables for Employee Tab
      */
     let respvonseData = [];
-    let searchInputs;
     let lastRequestTime = 0;
     const throttleDelay = 200;
 </script>
