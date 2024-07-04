@@ -154,7 +154,7 @@ function getUsersAJAX(): string {
     <div class="employee-main-container">
         <!-- Container Header -->
         <div class="employee-header">
-            <div class="">
+            <div>
                 <h1 class="title">Benutzerverwaltung</h1>
                 <p class="description">Verwalten Sie alle Mitarbeiter ihres Unternehmens</p>
             </div>
@@ -318,10 +318,32 @@ function getUsersAJAX(): string {
 </div>
 
 <!-- Modal for more details -->
-<div id="moreDetails" class="modal">
+<div id="modal-overlay" class="hidden" style="z-index: 98"></div>
+<div id="modal" class="hidden" style="z-index: 99">
     <div class="modal-content">
-        <span class="close" onclick="closeModal()">Close &times;</span>
-        <div id="userDetailsContent"></div>
+        <div class="grid grid-cols-3 gap-4 h-full">
+            <div class="col-span-2">
+                <div class="mb-4 flex flex-wrap justify-center gap-2">
+                    <button class="left-tab-button flex-grow px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded" data-tab="1">Benutzerdetails</button>
+                    <button class="left-tab-button flex-grow px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded " data-tab="5">Projekte und Aufgaben</button>
+                </div>
+                <div class="tab-content hidden" data-content="1"></div>
+                <div class="tab-content hidden" data-content="5"></div>
+            </div>
+            <div class="col-span-1">
+                <div class="mb-4 flex flex-wrap justify-center gap-2">
+                    <button class="right-tab-button flex-grow px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded" data-tab="6">1 Monat</button>
+                    <button class="right-tab-button flex-grow px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded" data-tab="7">3 Monate</button>
+                    <button class="right-tab-button flex-grow px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded" data-tab="8">6 Monate</button>
+                    <button class="right-tab-button flex-grow px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded" data-tab="9">Gesamte Zeit</button>
+                </div>
+                <div class="tab-content hidden" data-content="6"></div>
+                <div class="tab-content hidden" data-content="7"></div>
+                <div class="tab-content hidden" data-content="8"></div>
+                <div class="tab-content hidden" data-content="9"></div>
+            </div>
+        </div>
+         <i id="close-button" class="material-icons" style="z-index: 100;">close</i>
     </div>
 </div>
 

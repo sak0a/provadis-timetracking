@@ -1,7 +1,29 @@
+
+#modal-overlay
+    @apply fixed inset-0 bg-black bg-opacity-50
+#modal
+    opacity: 0
+    transform: scale(0)
+    transition: transform 0.3s ease, opacity 0.3s ease, width 0.3s ease, height 0.3s ease, left 0.3s ease, top 0.3s ease
+    @apply fixed
+    .modal-content
+        @apply  bg-white rounded-2xl shadow-lg w-full h-full p-6 relative  max-h-full
+        h2
+            @apply text-center font-semibold text-2xl
+        .left-tab-button, .right-tab-button
+            @apply bg-secondary text-primary px-4 py-2 text-md cursor-pointer -mt-0.5 rounded-full transition-all ease-in-out duration-300 font-medium
+            &:not(.active-tab):hover
+                @apply shadow-md shadow-secondary
+            &.active-tab
+                @apply bg-primary text-secondary
+    #close-button
+        width: 36px
+        height: 36px
+        @apply -top-4 -right-4 pt-0.5 absolute text-2xl text-center cursor-pointer bg-black text-white rounded-full
 .employee-container, .projects-container
     @apply p-8
     .employee-header, .projects-header
-        @apply flex items-center justify-between font-medium
+        @apply flex items-center justify-between font-medium relative
         p
             @apply text-black font-semibold
         h1 
@@ -19,7 +41,6 @@
             font-size: 16px // unused text-md
             &:hover
                 box-shadow: 0 2px 14px -5px #172C3A
-
     .employee-main-container, .projects-main-container
         @apply p-6 bg-white rounded-[20px]
     .employee-table-wrapper, .projects-table-wrapper
