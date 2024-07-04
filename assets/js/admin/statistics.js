@@ -1,4 +1,4 @@
-    fetch(`all_projects_details.php`)
+    fetch(`../api/all_projects_details.php`)
         .then(response => response.json())
         .then(data => {
             if (data.error) {

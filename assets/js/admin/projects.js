@@ -145,7 +145,7 @@ function insertTableData() {
 
 function showProjectDetails(event, projectId) {
     event.preventDefault();
-    fetch(`${BASE_URL_ADMIN}project_details.php?projectId=${projectId}`)
+    fetch(`${BASE_URL_ADMIN}../api/project_details.php?projectId=${projectId}`)
         .then(response => response.json())
         .then(data => {
             if (data.error) {

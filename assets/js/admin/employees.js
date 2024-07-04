@@ -139,7 +139,7 @@ function insertTableData() {
  */
 function showUserDetails(event, personalNumber) {
     event.preventDefault();
-    fetch(`${BASE_URL_ADMIN}users_details.php?f=get_user_details&s_pn=${personalNumber}&ajax=true`)
+    fetch(`${BASE_URL_ADMIN}../api/users_details.php?f=get_user_details&s_pn=${personalNumber}&ajax=true`)
     //fetch(`users_details.php?s_pn=${personalNumber}`)
         .then(response => response.json())
         .then(data => {

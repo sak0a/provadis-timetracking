@@ -205,8 +205,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ajax']) && isset($_POS
     <!-- End custom js for this page-->
 </body>
 <script>
-    const BASE_URL_ADMIN = '<?php echo Config::BASE_URL_ADMIN; ?>';
-    const BASE_URL = '<?php echo Config::BASE_URL; ?>';
+    const BASE_URL_ADMIN = "<?php echo Config::BASE_URL_ADMIN; ?>";
+    const BASE_URL = "<?php echo Config::BASE_URL; ?>";
     // Global Veriables
     let currentTab = '<?php echo $currentTab; ?>';
     /**

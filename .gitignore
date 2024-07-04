@@ -12,3 +12,7 @@ dist/
 admin/dashboard4.php
 backend/database/DatabaseUtil-alex.php
 backend/config.php
+assets/css/style.css
+assets/css/style.css
+purgecss.js
+.vscode/settings.json

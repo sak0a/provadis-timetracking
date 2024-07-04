@@ -392,7 +392,29 @@ class DatabaseUtil
         }
         return 0;
     }
-
+    public function getUserDetailsByPersonalNumber($personalNumber): ?array {
+        $sql = "
+            SELECT 
+                user_id,
+                personal_number,
+                email,
+                first_name,
+                last_name,
+                birthdate,
+                role_id
+            FROM 
+                Users
+            WHERE 
+                personal_number = ?
+        ";
+        $stmt = $this->database->prepare($sql);
+        $stmt->bind_param("i", $personalNumber);
+        $stmt->execute();
+        $result = $stmt->get_result();
+    
+        $details = $result->fetch_assoc();
+        return $details ? $details : null;
+    }
     // Informationen für den Nutzer aufrufen
     public function getUserDetails($personalNumber): ?array
     {
@@ -485,7 +507,14 @@ class DatabaseUtil
 
         return $userDetails;
     }
-    public function getUsersByFilter(Filter $filter, $page, $pageSize, $order): array
+/**
+     * @param Filter $filter Filter to apply
+     * @param Number $page Page number
+     * @param Number $pageSize Number of messages per page
+     * @param String $order Order of the messages
+     * @return array Message that match a filter
+     */
+    function getUsersByFilter(Filter $filter, $page, $pageSize, $order): array
     {
         $messages = array();
 
@@ -867,23 +896,31 @@ GROUP BY
     public function getTableContent($user_id): array
     {
         $sql = "SELECT 
-                p.project_name AS 'Projektname',
-                t.task_name AS 'Taskname',
-                ti.start_time AS 'Datum',
-                ti.start_time AS 'StartZeit',
-                ti.end_time AS 'EndZeit'
-            FROM 
-                Projects p
-            INNER JOIN
-                Tasks t ON t.project_id = p.project_id
-            INNER JOIN 
-                UserRoles ur ON t.project_id = ur.project_id
-            INNER JOIN  
-                Users u ON ur.user_id = u.user_id
-            INNER JOIN
-                TimeEntries ti ON u.user_id = ti.user_id
-            WHERE 
-                u.user_id = ?";
+    ti.time_entry_id AS 'TimeEntryID',
+    p.project_name AS 'Projektname',
+    t.task_name AS 'Taskname',
+    DATE(ti.start_time) AS 'Datum',
+    TIME_FORMAT(ti.start_time, '%H:%i') AS 'StartZeit',
+    TIME_FORMAT(ti.end_time, '%H:%i') AS 'EndZeit'
+FROM 
+    TimeEntries ti
+INNER JOIN 
+    Users u ON ti.user_id = u.user_id
+LEFT JOIN  
+    UserRoles ur ON u.user_id = ur.user_id
+LEFT JOIN 
+    Projects p ON ur.project_id = p.project_id
+LEFT JOIN
+    Tasks t ON ti.task_id = t.task_id
+WHERE 
+    u.user_id = ?
+AND
+    ti.start_time >= DATE_SUB(CURDATE(), INTERVAL 2 MONTH)
+GROUP BY
+    ti.time_entry_id
+ORDER BY
+    DATE(ti.start_time) DESC;
+";
 
         $stmt = $this->database->prepare($sql);
         $stmt->bind_param("i", $user_id);  // Bindung des Parameters user_id
@@ -896,6 +933,89 @@ GROUP BY
         $stmt->close();  // Schließen des Statements
         return $tableContent;
     }
+
+    public function deleteTimeEntryDuplets()
+    {
+        $sql = "DELETE te1
+            FROM TimeEntries te1
+            INNER JOIN TimeEntries te2 ON te1.user_id = te2.user_id
+                                      AND DATE(te1.start_time) = DATE(te2.start_time)
+                                      AND te1.time_entry_id <> te2.time_entry_id
+                                      AND te1.start_time < te2.end_time
+                                      AND te1.end_time > te2.start_time";
+
+        $stmt = $this->database->prepare($sql);
+
+        if ($stmt === false) {
+            // Handle SQL prepare error
+            return false;
+        }
+
+        $result = $stmt->execute();
+
+        if ($result === false) {
+            // Handle SQL execution error
+            return false;
+        }
+
+        $stmt->close();
+
+        return true;
+    }
+
+//    public function TestInsert(){
+//        $sql = "INSERT INTO TimeEntries ( start_time) VALUES (2024-06-28 09:00:00)";
+//        $stmt = $this->database->prepare($sql);
+//        $stmt->execute();
+//    }
+
+
+    // create Table entry if there are no overlaps
+    public function createTableEntry($user_id, $project_name, $task_name, $start_time, $end_time, $approved_by)
+{
+    // Überprüfen auf Überschneidungen und Dopplungen
+    $sql_check = "SELECT COUNT(*) AS count FROM TimeEntries 
+                  WHERE user_id = ? 
+                  AND DATE(start_time) = DATE(?) 
+                  AND (
+                      (start_time <= ? AND end_time > ?) OR
+                      (start_time < ? AND end_time >= ?) OR
+                      (start_time >= ? AND end_time <= ?)
+                  )";
+
+    $stmt_check = $this->database->prepare($sql_check);
+    $stmt_check->bind_param("isssssss", $user_id, $start_time, $start_time, $start_time, $end_time, $end_time, $start_time, $end_time);
+    $stmt_check->execute();
+    $stmt_check->store_result(); // Ergebnis der Abfrage im Speicher halten
+    $stmt_check->bind_result($count);
+    $stmt_check->fetch(); // Ergebnis abrufen und verarbeiten
+
+    if ($count == 0) {
+        // Falls keine Überschneidungen gefunden wurden, Daten einfügen
+        $sql_insert = "INSERT INTO TimeEntries (user_id, project_id, task_id, start_time, end_time, approved_by) 
+                       VALUES (?, ?, ?, ?, ?, ?)";
+        $stmt_insert = $this->database->prepare($sql_insert);
+        $stmt_insert->bind_param("iiisss", $user_id, $project_name, $task_name, $start_time, $end_time, $approved_by);
+        $success = $stmt_insert->execute();
+
+        if ($success) {
+            $stmt_check->free_result(); // Freigabe der vorherigen Abfrageergebnisse
+            return true;
+        } else {
+            $stmt_check->free_result(); // Freigabe der vorherigen Abfrageergebnisse
+            //echo "<script>console.error('Fehler beim Einfügen des Eintrags.');</script>";
+            return false;
+        }
+    } else {
+        // Falls Überschneidungen gefunden wurden, Fehlermeldung ausgeben und Einfügen abbrechen
+        $stmt_check->free_result(); // Freigabe der vorherigen Abfrageergebnisse
+        //echo "<script>alert('Es gibt eine Überschneidung mit einem vorhandenen Eintrag.');</script>";
+        
+        return false;
+        
+    }
+    
+}
 
     public function getTasksByProject($projectId) {
         $sql = "SELECT task_id, task_name FROM Tasks WHERE project_id = ?";
