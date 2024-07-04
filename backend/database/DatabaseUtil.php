@@ -588,6 +588,54 @@ LEFT JOIN
         }
         return $projects;
     }
+
+    public function getAllProjectsForStatistic(): array
+    {
+        $sql = "SELECT 
+    p.project_id AS 'Projekt-ID',
+    p.project_name AS 'Projektname',
+    GROUP_CONCAT(DISTINCT CONCAT(u.first_name, ' ', u.last_name) SEPARATOR ', ') AS 'Projektleiter',
+    p.start_date AS 'Startdatum',
+    p.end_date AS 'Enddatum',
+    ps.status_name AS 'Status',
+    p.planned_time AS 'Geplannte Zeit',
+    COALESCE(te.total_hours, 0) AS 'Gesamte Stunden'
+FROM 
+    Projects p
+LEFT JOIN
+    (SELECT ur.project_id, ur.user_id
+     FROM UserRoles ur
+     WHERE ur.role_id = 7) ur ON p.project_id = ur.project_id
+LEFT JOIN
+    Users u ON ur.user_id = u.user_id
+LEFT JOIN
+    ProjectStatus ps ON p.status_id = ps.status_id
+LEFT JOIN 
+    (SELECT 
+        project_id, 
+        SUM(TIMESTAMPDIFF(HOUR, start_time, end_time)) AS total_hours 
+     FROM 
+        TimeEntries 
+     GROUP BY 
+        project_id
+    ) te ON p.project_id = te.project_id
+GROUP BY 
+    p.project_id, 
+    p.project_name, 
+    p.start_date, 
+    p.end_date, 
+    ps.status_name, 
+    p.planned_time
+";
+        $stmt = $this->database->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $project = [];
+        while ($row = $result->fetch_assoc()) {
+            $project[] = $row;
+        }
+        return $project;
+    }
     public function getProjectTotalHours($projectId) {
         $stmt = $this->database->prepare("
             SELECT COALESCE(SUM(TIMESTAMPDIFF(HOUR, te.start_time, te.end_time)), 0) AS total_hours
