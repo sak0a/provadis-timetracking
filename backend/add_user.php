@@ -23,7 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $birthdate= $_POST['birthdate'];
     $password= $_POST['password'];
     $role= $_POST['role_id'];
-    $entry_date= $_POST['entry_date'];
+    $entry_date= $_POST['entry_date'] ?? date('Y-m-d');
 
     // Überprüfen, ob der Benutzer existiert
     if ($dbUtil->userExists($email)) {

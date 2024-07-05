@@ -28,7 +28,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Überprüfen, ob der Benutzer existiert
         if ($dbUtil->createTimeEntry($user_id, $project_id, $task_id, $start_time, $end_time, $approved_by)) {
             echo 'Der project wurde erfolgreich angelegt';
-            header("Location: ../admin");
+            if ($_SESSION['user']['role_id'] == 7) {
+                header("Location: /leiter");
+            } else if ($_SESSION['user']['role_id'] == 6) {
+                header("Location: /admin");
+            } else {
+                header("Location: /mitarbeiter");
+            }
         } else {
             echo 'Fehler beim Anlegen des projects';
         }

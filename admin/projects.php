@@ -162,7 +162,7 @@ function getProjectsAJAX(): string {
                 <h1 class="title">Projektverwaltung</h1>
                 <p class="description">Verwalten Sie alle Projekte ihres Unternehmens</p>
             </div>
-            <button class="add-project-btn" onclick="document.getElementById('addProjectModal').style.display='block'">
+            <button class="add-project-btn">
                 <i class="material-icons">add</i>
                 <span class="ml-1">Projekt hinzufügen</span>
             </button>
@@ -313,6 +313,67 @@ function getProjectsAJAX(): string {
             </form>
         </div>
     </div>
+
+    <!-- Modal for adding a new Project -->
+    <div id="add-project-modal-overlay" class="hidden" style="z-index: 98"></div>
+    <div id="add-project-modal" class="hidden" style="z-index: 99">
+        <div class="modal-content">
+            <h2 class="form-title">Neues Projekt hinzufügen</h2>
+            <form class="form-element" action="../backend/add_project.php" method="post">
+                <div class="text-field">
+                    <label>Projektname</label>
+                    <div class="input-wrapper">
+                        <input name="project_name" type="text" required class="input-element" placeholder="Projektname eingeben" />
+                    </div>
+                </div>
+
+                <div class="date-field">
+                    <label>Startdatum</label>
+                    <div class="input-wrapper">
+                        <input name="start_date" type="date" required class="input-element" />
+                    </div>
+                </div>
+
+                <div class="select-field">
+                    <label>Status</label>
+                    <div class="input-wrapper">
+                        <select name="status_id" required class="input-element">
+                            <option value="9">Abgeschlossen</option>
+                            <option value="10">In Bearbeitung</option>
+                            <option value="12">Pausiert</option>
+                            <option value="11">Abgebrochen</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="select-field">
+                    <label>Verantwortlicher</label>
+                    <div class="input-wrapper">
+                        <select name="department_head" required class="input-element">
+                            <option value="1">Alexandros</option>
+                            <option value="2">Maria</option>
+                            <option value="3">Anton</option>
+                            <option value="4">Laurin</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="!mt-8 col-span-2">
+                    <button type="submit" class="login-button">
+                        Projekt hinzufügen
+                    </button>
+                </div>
+                <?php
+                if (isset($_SESSION['error'])) {
+                    echo '<div class="error-message">' . $_SESSION['error'] . '</div>';
+                    unset($_SESSION['error']);
+                }
+                ?>
+            </form>
+            <i id="add-project-close-button" class="material-icons" style="z-index: 100;">close</i>
+        </div>
+    </div>
+
 
     <!-- Modal for more details -->
     <div id="moreDetails" class="modal">

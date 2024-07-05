@@ -35,15 +35,7 @@ function sendUserDataRequest() {
     };
     xhr.send();
 }
-function getPaginationClass(pageNumber, totalPages) {
-    if (pageNumber === totalPages) {
-        return "rounded-r-md";
-    } else if (pageNumber === 1) {
-        return "rounded-l-md";
-    } else {
-        return "";
-    }
-}
+
 function insertTableData() {
     const tableBody = document.getElementById('tableBody');
     tableBody.innerHTML = '';
@@ -55,13 +47,13 @@ function insertTableData() {
 
         const projectId = project['id'];
         const projectName = project['name'];
-        const projectStartDate = project['start_date'];
-        const projectEndDate = project['end_date'];
+        const projectStartDate = project['start_date'] ?? '---';
+        const projectEndDate = project['end_date'] ?? '---';
         const projectStatus = project['status_name'];
-        const projectPlannedTime = project['planned_time'];
+        const projectPlannedTime = project['planned_time'] ?? '0';
 
         row.innerHTML = '' +
-            '<td class="pl-2 employee-number" data-id="' + projectId + '">' + projectId + '</td>' +
+            '<td class="pl-2 project-number" data-id="' + projectId + '"><span>' + projectId + '</span><button>Details</button></td>' +
             '<td class="pl-2">' + projectName + '</td>' +
             '<td class="pl-2">' + projectPlannedTime + '</td>' +
             '<td class="pl-2">' + projectStartDate + '</a></td>' +
@@ -71,7 +63,7 @@ function insertTableData() {
         //'   <a href="#" class="text-[#B68764] duration-200  transition-colors ease-in-out hover:text-white">Edit<span class="sr-only">, Lindsay Walton</span></a>' +
         //'</td>';
         tableBody.appendChild(row);
-        row.querySelector(`.employee-number[data-id="${projectId}"]`).addEventListener('click', function (event) {
+        row.querySelector(`.project-number[data-id="${projectId}"]`).addEventListener('click', function (event) {
             showProjectDetails(event, projectId);
         });
         anime({
@@ -182,7 +174,19 @@ function createCharts(data) {
     });
 }
 
-
+function handleAddProjectModal() {
+    const openButton = document.querySelector('.add-project-btn');
+    const closeButton = document.getElementById('add-project-close-button');
+    const modal = document.getElementById('add-project-modal');
+    const modalOverlay = document.getElementById('add-project-modal-overlay');
+    const modalAttributes = {
+        width: '38%',
+        height: '345px',
+        left: '32%',
+        top: '10%'
+    };
+    handleModalBaseFunctionality(openButton, modal, modalOverlay, closeButton, modalAttributes);
+}
 
 // Animation for fade-in effect
 anime({
@@ -192,6 +196,7 @@ anime({
     easing: 'easeOutQuad', // Easing function for a smooth fade-in
     delay: 2 * 50 // Staggered delay for each row
 });
-sendUserDataRequest();
+sendUserDataRequest()
 // Event listener for search inputs
 handleContentTableInputs()
+handleAddProjectModal();

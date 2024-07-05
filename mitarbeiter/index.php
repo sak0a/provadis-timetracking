@@ -1,9 +1,7 @@
 <?php
-
+session_start();
 include ('../backend/config.php');
 include('../backend/Auth.php');
-
-session_start();
 
 // Logout-Logik
 Auth::logout();
@@ -19,7 +17,7 @@ if (!Auth::isLoggedIn()) {
 
 // Basis-URL festlegen
 
-$currentTab = "employees";
+$currentTab = "dashboard";
 
 $user = $_SESSION['user'];
 $benutzerId=htmlspecialchars($user['user_id']);
@@ -36,35 +34,17 @@ else{$benutzerRole= 'Mitarbeiter';}
  * Content Tab Management START
  */
 // If no tab is set, set the default tab to dashboard
-if (!isset($_SESSION['leader__current_tab'])) {
-    $_SESSION['leader__current_tab'] = 'dashboard';
+if (!isset($_SESSION['mitarbeiter__current_tab'])) {
+    $_SESSION['mitarbeiter__current_tab'] = 'dashboard';
 }
 // If a request is made to change the tab, set the new tab
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['tab'])) {
-    $_SESSION['leader__current_tab'] = $_POST['tab'];
+    $_SESSION['mitarbeiter__current_tab'] = $_POST['tab'];
 }
-$currentTab = $_SESSION['leader__current_tab'];
+$currentTab = $_SESSION['mitarbeiter__current_tab'];
 function loadTab($tab): string {
-    if ($tab === 'employees') {
-        $content = file_get_contents('employees.php');
-        ob_start();
-        eval('?>' . $content);
-        return ob_get_clean();
-    }
-    if ($tab === 'projects') {
-        $content = file_get_contents('projects.php');
-        ob_start();
-        eval('?>' . $content);
-        return ob_get_clean();
-    }
     if ($tab === 'dashboard') {
         $content = file_get_contents('dashboard.php');
-        ob_start();
-        eval('?>' . $content);
-        return ob_get_clean();
-    }
-    if ($tab === 'statistics') {
-        $content = file_get_contents('statistics.php');
         ob_start();
         eval('?>' . $content);
         return ob_get_clean();
@@ -87,11 +67,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ajax']) && isset($_POS
     <title>CommerzBau</title>
 
     <script src="../assets/js/anime.min.js"></script>
-    <script src="../assets/js/global.js"></script>
     <script src="../assets/js/admin.js"></script>
+    <script src="../assets/js/global.js"></script>
     <link rel="stylesheet" href="../dist/css/style.purged.css">
     <link rel="stylesheet" href="../dist/css/global.css">
     <link rel="stylesheet" href="../dist/css/admin.css">
+    <script src="../assets/js/dashboard.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -119,29 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ajax']) && isset($_POS
                     <!-- TDOO: PHP trim email to n maximum characters -->
                     
                 </div>
-                <div class="mdc-list-group">
-                    <nav class="mdc-list mdc-drawer-menu">
-
-                        <div class="mdc-list-item mdc-drawer-item">
-                        <a class="mdc-drawer-link" onclick="switchContentTo('projects')">
-                                <i class="material-icons mdc-list-item__start-detail mdc-drawer-item-icon" aria-hidden="true">grid_on</i>
-                                Projekte
-                            </a>
-                        </div>
-                        <div class="mdc-list-item mdc-drawer-item">
-                        <a class="mdc-drawer-link" onclick="switchContentTo('employees')">
-                                <i class="material-icons mdc-list-item__start-detail mdc-drawer-item-icon" aria-hidden="true">person</i>
-                                Mitarbeiter
-                            </a>
-                        </div>
-                        <div class="mdc-list-item mdc-drawer-item">
-                        <a class="mdc-drawer-link" onclick="switchContentTo('statistics')">
-                                <i class="material-icons mdc-list-item__start-detail mdc-drawer-item-icon" aria-hidden="true">pie_chart_outlined</i>
-                                Statistiken
-                            </a>
-                        </div>
-                    </nav>
-                </div>
+            
             </div>
         </aside>
         <!-- partial -->
@@ -157,10 +116,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ajax']) && isset($_POS
                 </div>
                 <div class="col-middle"></div>
                 <div class="col-right">
-                    <button onclick="window.location='/';" class="employee-view-btn gradient-border">
-                        <i class="material-icons">person</i>
-                        <span class="ml-1">Mitarbeiteransicht</span>
-                    </button>
                     <form method="post" class="admin-top-bar__logout_form">
                         <button type="submit" class="logout-btn anmeldung_form gradient-border" id="logout" name="logout">
                             <i class="material-icons">logout</i>

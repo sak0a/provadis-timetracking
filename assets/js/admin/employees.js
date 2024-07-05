@@ -1,3 +1,8 @@
+/**
+ * Sends the AJAX Request to the Server to get the User Data
+ * and also uses insertContentTablePagination() and insertTableData() to insert the Data into the DOM
+ * @param responseData - Data from the current AJAX Request, variable is set in the global scope
+ */
 function sendUserDataRequest() {
     const currentTime = Date.now();
     if (!(currentTime - lastRequestTime >= throttleDelay)) {
@@ -35,16 +40,11 @@ function sendUserDataRequest() {
     };
     xhr.send();
 }
-function getPaginationClass(pageNumber, totalPages) {
-    if (pageNumber === totalPages) {
-        return "rounded-r-md";
-    } else if (pageNumber === 1) {
-        return "rounded-l-md";
-    } else {
-        return "";
-    }
-}
 
+/**
+ * Inserts the single rows of the User Data into the Table and animates them
+ * @param responseData - Data from the current AJAX Request, variable is set in the global scope
+ */
 function insertTableData() {
     const tableBody = document.getElementById('tableBody');
     tableBody.innerHTML = '';
@@ -86,6 +86,11 @@ function insertTableData() {
     }
 }
 
+/**
+ * Handles the functionality of Charts for the User Details Modal
+ * @param time - time period for the chart (1 Month, 3 Months, 6 Months, total)
+ * @param data - data for the chart
+ */
 function createChart(time, data) {
     const chartConfigs = [
         {
@@ -116,7 +121,6 @@ function createChart(time, data) {
     let config = [];
     if (time === '1') {
         config = chartConfigs[0];
-
     } else if (time === '3') {
         config = chartConfigs[1];
     } else if (time === '6') {
@@ -156,6 +160,10 @@ function createChart(time, data) {
     });
 }
 
+/**
+ * Handles the functionality of the User Details Modal
+ * @param userPersonalNumber - personal number of the user
+ */
 function handleShowUserDetailsModal(userPersonalNumber) {
     let userDetails = [];
     fetch(`${BASE_URL_ADMIN}../api/users_details.php?f=get_user_details&s_pn=${userPersonalNumber}&ajax=true`)
@@ -176,63 +184,19 @@ function handleShowUserDetailsModal(userPersonalNumber) {
     const leftTabContents = document.querySelectorAll('.tab-content[data-content="1"], .tab-content[data-content="2"], .tab-content[data-content="3"], .tab-content[data-content="4"], .tab-content[data-content="5"]');
     const rightTabContents = document.querySelectorAll('.tab-content[data-content="6"], .tab-content[data-content="7"], .tab-content[data-content="8"], .tab-content[data-content="9"], .tab-content[data-content="10"]');
 
-    function calculateButtonPosition(button) {
-        const rect = button.getBoundingClientRect();
-        return {
-            x: rect.left + window.scrollX,
-            y: rect.top + window.scrollY,
-            width: rect.width,
-            height: rect.height
-        };
-    }
+    const modalAttributes = {
+        width: '85%',
+        height: '750px',
+        left: '6%',
+        top: '-10%'
+    };
+    handleModalBaseFunctionality(openButton, modal, modalOverlay, closeButton, modalAttributes);
 
-    function setModalToButtonPosition(button) {
-        const position = calculateButtonPosition(button);
-        modal.style.width = `${position.width}px`;
-        modal.style.height = `${position.height}px`;
-        modal.style.left = `${position.x}px`;
-        modal.style.top = `${position.y}px`;
-    }
-
-    openButton.addEventListener('click', () => {
-        setModalToButtonPosition(openButton);
-
-        modal.classList.remove('hidden');
-        modalOverlay.classList.remove('hidden');
-
-        setTimeout(() => {
-            modal.style.transition = 'transform 0.3s ease, opacity 0.3s ease, width 0.3s ease, height 0.3s ease, left 0.3s ease, top 0.3s ease';
-            modal.style.transform = 'scale(1)';
-            modal.style.opacity = 1;
-            modal.style.width = '80%';
-            modal.style.height = '550px';
-            modal.style.left = '10%';
-            modal.style.top = '-10%';
-        }, 10); // Timeout to ensure the initial styles are applied before the transition
-    });
-
-    closeButton.addEventListener('click', () => {
-        setModalToButtonPosition(openButton);
-        modal.style.transform = 'scale(0)';
-        modal.style.opacity = 0;
-
-        setTimeout(() => {
-            modal.classList.add('hidden');
-            modalOverlay.classList.add('hidden');
-        }, 300); // Timeout to match the duration of the transition
-    });
-
-    modalOverlay.addEventListener('click', () => {
-        setModalToButtonPosition(openButton);
-        modal.style.transform = 'scale(0)';
-        modal.style.opacity = 0;
-
-        setTimeout(() => {
-            modal.classList.add('hidden');
-            modalOverlay.classList.add('hidden');
-        }, 300); // Timeout to match the duration of the transition
-    });
-
+    /**
+     * Activates the left tab and content
+     * @param button - HTML Button Element
+     * @param content - HTML Content Element
+     */
     function activateLeftTab(button, content) {
         leftTabButtons.forEach(btn => btn.classList.remove('active-tab'));
         leftTabContents.forEach(cont => cont.classList.add('hidden'));
@@ -240,6 +204,12 @@ function handleShowUserDetailsModal(userPersonalNumber) {
         button.classList.add('active-tab');
         content.classList.remove('hidden');
     }
+
+    /**
+     * Activates the right tab and content
+     * @param button - HTML Button Element
+     * @param content - HTML Content Element
+     */
     function activateRightTab(button, content) {
         rightTabButtons.forEach(btn => btn.classList.remove('active-tab'));
         rightTabContents.forEach(cont => cont.classList.add('hidden'));
@@ -248,13 +218,18 @@ function handleShowUserDetailsModal(userPersonalNumber) {
         content.classList.remove('hidden');
     }
 
+    /**
+     * Inserts the Content for the selected Tab into the Modal
+     * @param tab
+     * @param content
+     */
     function loadTab(tab, content) {
 
         if (tab === '1') {
             content.innerHTML = `<div class="grid grid-cols-2 grid-rows-2 gap-4">
 <div class="col-start-1 row-start-1">
     <h2>Benutzerdetails</h2>
-    <table class="min-w-full divide-y divide-gray-200">
+    <table class="details-table">
                     <tr>
                         <th>Attribut</th>
                         <th>Wert</th>
@@ -362,6 +337,7 @@ function handleShowUserDetailsModal(userPersonalNumber) {
                 
                 `;
         } else if (tab === '5') {
+
             content.innerHTML = `
                  <table class="details-table">
                         <tr>
@@ -384,6 +360,7 @@ function handleShowUserDetailsModal(userPersonalNumber) {
                             <td>${project.task_name}</td>
                         </tr>`).join('')}
                     </table>`;
+
         }  else if (tab === '6') {
             content.innerHTML = `<canvas id="pieChart">Monat</canvas>`;
             createChart('1', userDetails);
@@ -401,8 +378,6 @@ function handleShowUserDetailsModal(userPersonalNumber) {
             createBarChart(userDetails, content);
         }
     }
-
-
 
 
     leftTabButtons.forEach(button => {
@@ -423,8 +398,9 @@ function handleShowUserDetailsModal(userPersonalNumber) {
         });
     });
 
-    // <!-- ACTIVATE DEFAULT TABS ON MODAL OPEN -->
-
+    /**
+     * Timeout to wait for the modal to load scripts before opening the Modal
+     */
     setTimeout(() => {
         // Benutzerdetails
         loadTab('1', document.querySelector('.tab-content[data-content="1"]'));
@@ -432,9 +408,31 @@ function handleShowUserDetailsModal(userPersonalNumber) {
         // 1 Monats Statistik
         loadTab('6', document.querySelector('.tab-content[data-content="6"]'));
         activateRightTab(rightTabButtons[0], document.querySelector('.tab-content[data-content="6"]'));
+        document.querySelectorAll('.modal-content .employee-name').forEach(name => name.innerHTML = `Infos über ${userDetails.user.first_name} ${userDetails.user.last_name}`);
     }, 500);
 }
 
+/**
+ * Handles the functionality of the Add User Modal
+ */
+function handleAddUserModal() {
+    const openButton = document.querySelector('.add-employee-btn');
+    const closeButton = document.getElementById('add-employee-close-button');
+    const modal = document.getElementById('add-employee-modal');
+    const modalOverlay = document.getElementById('modal-overlay');
+    const modalAttributes = {
+        width: '38%',
+        height: '530px',
+        left: '32%',
+        top: '10%'
+    };
+    handleModalBaseFunctionality(openButton, modal, modalOverlay, closeButton, modalAttributes);
+}
+
+/**
+ * Handles the functionality of the Content Table Inputs
+ * @param data - Data from the current AJAX Request, variable is set in the global scope
+ */
 function createBarChart(data){
     const ctx_1 = document.getElementById('myBarChart').getContext('2d');
     const first_month= (1-((data.general_hours.hours_last_month_allg_Arbeit/data.hours.hours_last_month)+((data.absences.days_last_month_absences*7.5)/data.hours.hours_last_month)))*100;
@@ -449,8 +447,6 @@ function createBarChart(data){
             label: 'Aktive Arbeit in %',
             data: [
                 first_month, three_month, six_month, all_time
-
-
             ],
             backgroundColor: [
                 'rgba(99, 255, 109, 0.2)',
@@ -482,6 +478,8 @@ function createBarChart(data){
     });
 }
 
+
+
 // Animation for fade-in effect
 anime({
     targets: document.getElementById('main-container'),
@@ -491,4 +489,5 @@ anime({
     delay: 2 * 50 // Staggered delay for each row
 });
 sendUserDataRequest();
+handleAddUserModal();
 handleContentTableInputs()

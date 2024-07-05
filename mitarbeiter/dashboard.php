@@ -1,31 +1,35 @@
-
 <?php
-if (file_exists('../backend/database/Database.php') && file_exists('../backend/database/DatabaseUtil.php')) {
-    require_once '../backend/database/Database.php';
-    require_once '../backend/database/DatabaseUtil.php';
-} 
-else if (file_exists('backend/database/Database.php') && file_exists('backend/database/DatabaseUtil.php')) {
-    require_once 'backend/database/Database.php';
-    require_once 'backend/database/DatabaseUtil.php';
-} 
-else {
-    die('Required files are missing.');
-}
+require_once '../backend/database/Database.php';
+require_once '../backend/database/DatabaseUtil.php';
+
 
 use backend\database\Database;
 use backend\database\DatabaseUtil;
+
 
 // Initialisierung der Datenbankverbindung
 $db = Database::initDefault();
 // Erstellen eines DatabaseUtil-Objekts
 $dbUtil = new DatabaseUtil($db->getConnection());
+
 $user_id = $_SESSION['user']['user_id'];
 $user = $_SESSION['user'];
 $benutzerId=htmlspecialchars($user['user_id']);
 
 $selectedProjectId = isset($_POST['project2']) ? $_POST['project2'] : null;
 $responsiblePersons = $selectedProjectId ? $dbUtil->getResponsiblePersons($selectedProjectId) : [];$projectNames = $dbUtil->getProjectName($user_id);
+//$dbUtil->deleteTimeEntryDuplets();
 $tableContents = $dbUtil->getTableContent($user_id);
+$tableGesammtzeit = $dbUtil->getSaldo($user_id);
+$absencesTableContents = $dbUtil->getAbsencesTableContent($user_id);
+$absTypes = $dbUtil-> getAllAbsenceTypes();
+
+//$dbUtil->TestInsert();
+
+
+
+
+
 ?>
 
 <!DOCTYPE html>
@@ -85,19 +89,34 @@ $tableContents = $dbUtil->getTableContent($user_id);
         var datewithin28 = true;
 
         function deleteFunction(button) {
-            var result = confirm('Möchten Sie den Eintrag löschen?');
-            if (result) {
-                var row = button.parentNode.parentNode;
-                var table = row.parentNode;
-                var saldoMinutes = getMinutesSinceMidnight(document.getElementById(`saldo${row.id}`).innerText);
-
-                contrDate(`date${row.id}`);
-                if (datewithin28 == true) {
-                    gleitzeit = gleitzeit - saldoMinutes;
-                    document.getElementById("gleitzeit").innerHTML = "Gleitzeit: " + zeitUmform(gleitzeit);
-                    table.removeChild(row);
-                }
+            // Bestätigungsnachricht
+            if (!confirm('Möchten Sie diesen Eintrag wirklich löschen?')) {
+                return; // Abbruch, wenn der Benutzer nicht bestätigt
             }
+
+            // Zugriff auf die Zeile, die gelöscht werden soll
+            var row = button.closest('tr');
+            var id = row.getAttribute('id'); // ID der Zeile, die gelöscht werden soll
+
+            // AJAX-Anfrage, um die Zeile vom Server zu löschen
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/api/delete_tableEntry.php'); // Hier die URL zum PHP-Skript angeben, das die Löschung durchführt
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    // Erfolgreiche Antwort vom Server
+                    // Hier kannst du weitere Aktionen ausführen, z.B. die Zeile aus der Tabelle entfernen
+                    row.remove(); // Entferne die Zeile aus der HTML-Tabelle
+                } else {
+                    // Fehlerbehandlung
+                    alert('Es ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.');
+                }
+            };
+            xhr.onerror = function() {
+                // Fehlerbehandlung bei Verbindungsproblemen
+                alert('Es ist ein Verbindungsfehler aufgetreten. Bitte überprüfen Sie Ihre Netzwerkverbindung.');
+            };
+            xhr.send('id=' + encodeURIComponent(id)); // Sende die ID des zu löschenden Eintrags an das PHP-Skript
         }
 
         function uberpruefung() {
@@ -258,7 +277,7 @@ $tableContents = $dbUtil->getTableContent($user_id);
         }
 
         function onchangeFehlzeitEntsch() {
-            var firstSelect = document.getElementById('project'); 
+            var firstSelect = document.getElementById('project');
             var secondSelectTasks = document.getElementById('tasks');
             var secondSelectStartTime = document.getElementById('startTime');
             var secondSelectEndTime = document.getElementById('endTime');
@@ -294,116 +313,61 @@ $tableContents = $dbUtil->getTableContent($user_id);
                 window.alert("Das ausgewählte Datum liegt im letzten Monat.");
             }
         }
-
-        var staterProject;
-        var starterTask;
-        var starterDate;
-        var starterTime;
-
-        function startStopFunction() {
-            getCurrentTime();
-            startStop();
-            if (boolStartStop === false) {
-                staterProject = document.getElementById("project1").value;
-                starterTask = document.getElementById("tasks1").value;
-                starterDate = document.getElementById("datePicker1").value;
-                starterTime = roundTime("startStopTime");
-                document.getElementById("startStopTime").value = getCurrentTime();
-                boolStartStop = true;
-                console.log(boolDatenredundanz);
-            } else {
-                boolStartStop = false;
-                var endTime = roundTime("startStopTime");
-                var saldo = zeitUmform(giveSaldo(starterTime, endTime));
-                tabellenZeileErst(staterProject, starterTask, starterDate, starterTime, endTime, saldo);
-                checkOverlaps(saldo);
-                console.log(boolDatenredundanz);
-            }
-        }
-
         function getCurrentTime() {
             const now = new Date();
             const hour = now.getHours();
             const minute = now.getMinutes();
             const hourString = timeToString(hour);
             const minuteString = timeToString(minute);
+
             return `${hourString}:${minuteString}`;
         }
+
 
         function timeToString(number) {
             return number.toString().padStart(2, '0');
         }
 
-        let startTime;
-        let updatedTime;
-        let difference;
-        let tInterval;
-        let running = false;
 
-        function startStop() {
-            if (!running) {
-                difference = 0;
-                startTime = new Date().getTime() - difference;
-                tInterval = setInterval(updateTime, 1000);
-                running = true;
-                document.getElementById('buttonStartStop').innerHTML = "Stop";
-            } else {
-                clearInterval(tInterval);
-                running = false;
-                document.getElementById('buttonStartStop').innerHTML = "Start";
-            }
-        }
-
-        function updateTime() {
-            updatedTime = new Date().getTime();
-            difference = updatedTime - startTime;
-            let hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            let minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-            let seconds = Math.floor((difference % (1000 * 60)) / 1000);
-            hours = (hours < 10) ? "0" + hours : hours;
-            minutes = (minutes < 10) ? "0" + minutes : minutes;
-            seconds = (seconds < 10) ? "0" + seconds : seconds;
-            document.getElementById('stopwatch').innerHTML = timeToString(hours) + ":" + timeToString(minutes) + ":" + timeToString(seconds);
-        }
-
-        document.getElementById('project1').addEventListener('change', function() {
-            var projectId = this.options[this.selectedIndex].id;
-            fetchTasks(projectId);
-        });
+        // chatgpt
     </script>
 </head>
 <body>
 <div class="container">
     <h1>Employee Work Hours</h1>
 
-    <!-- Work Hours Form -->
-    <form id="workHoursForm">
-    <div class="form-group">
-    <label for="project1"><b>Project</b></label>
-    <select name="project1" id="project1">
-        <?php foreach($projectNames as $projectName): ?>
-        <option id="<?php echo htmlspecialchars($projectName['project_id']); ?>"><?php echo htmlspecialchars($projectName['Projektname']); ?></option>
-        <?php endforeach; ?>
-    </select></div>
-    </br>
-    <label for="tasks1"><b>Task</b></label>
-    <select name="tasks1" id="tasks1"></select>
-    </br>
-    <label for="datePicker1"><b>Date:</b></label>
-    <input type="date" id="datePicker1" name="datePicker1" value="<?php echo date('Y-m-d'); ?>" disabled="disabled" required>
-    </br>
-    <label for="startStopTime"><b>Start/Stop Time:</b></label>
-    <input type="time" id="startStopTime" name="startStopTime" value="<?php date_default_timezone_set('Europe/Berlin'); echo date('H:i'); ?>" required>
-    <button type="button" id="buttonStartStop" onclick="startStopFunction()">Start</button>
-    <div id="stopwatch">00:00:00</div>
-    <button type="button" id="buttonManuelleEingabe" onclick="document.getElementById('manuelleEingabe').style.display='block'">Manuelle Eingabe</button>
-</form>
+    </br></br>
 
-    </br></br></br>
+    <button type="button" class="button" onclick="document.getElementById('manuelleEingabe').style.display='block'">Manuelle Eingabe</button>
+    <button type="button" class="button" onclick="document.getElementById('absencesEingabe').style.display='block'">Eintrag zur Abwesenheit hinzufügen</button>
+    </br></br>
 
-    <p id="gleitzeit">Gleitzeit: </p>
 
-    </br></br></br>
+    <table id="absencesTable" class="table table-bordered">
+        <thead>
+        <tr>
+            <th>Art</th>
+            <th>Beginn</th>
+            <th>Ende</th>
+            <th></th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <?php foreach ($absencesTableContents as $absencesTableContent): ?>
+            <tr>
+                <td><?php echo htmlspecialchars($absencesTableContent['Art']); ?></td>
+                <td><?php echo htmlspecialchars($absencesTableContent['StartDatum']); ?></td>
+                <td><?php echo htmlspecialchars($absencesTableContent['EndDatum']); ?></td>
+                <td>
+                    <button type="button" class="action-button-abs" data-id="<?php echo htmlspecialchars($absencesTableContent['AbsenceID']); ?>">X</button>
+                </td>
+            </tr>
+        <?php endforeach;
+        ?>
+        </tbody>
+    </table>
+
     <table id="workHoursTable" class="table table-bordered">
         <thead>
         <tr>
@@ -413,68 +377,92 @@ $tableContents = $dbUtil->getTableContent($user_id);
             <th>Beginn</th>
             <th>Ende</th>
             <th>Saldo</th>
-            <th>id</th>
             <th></th>
         </tr>
         </thead>
+
         <tbody>
         <?php foreach ($tableContents as $tableContent): ?>
-    <tr>
-        <td><?php echo htmlspecialchars($tableContent['Projektname']); ?></td>
-        <td><?php echo htmlspecialchars($tableContent['Taskname']); ?></td>
-        <td><?php echo htmlspecialchars($tableContent['Datum']); ?></td>
-        <td><?php echo htmlspecialchars($tableContent['StartZeit']); ?></td>
-        <td><?php echo htmlspecialchars($tableContent['EndZeit']); ?></td>
-        <td>0</td>
-        <td><?php echo htmlspecialchars($tableContent['TimeEntryID']); ?></td>
-        <td>
-            <button type="button" class="action-button" data-id="<?php echo htmlspecialchars($tableContent['TimeEntryID']); ?>">X</button>
-        </td>
-    </tr>
-<?php endforeach; ?>
+            <tr>
+                <td><?php echo htmlspecialchars($tableContent['Projektname']); ?></td>
+                <td><?php echo htmlspecialchars($tableContent['Taskname']); ?></td>
+                <td><?php echo htmlspecialchars($tableContent['Datum']); ?></td>
+                <td><?php echo htmlspecialchars($tableContent['StartZeit']); ?></td>
+                <td><?php echo htmlspecialchars($tableContent['EndZeit']); ?></td>
+                <td><?php echo htmlspecialchars($tableContent['Saldo']); ?></td>
+                <td>
+                    <button type="button" class="action-button" data-id="<?php echo htmlspecialchars($tableContent['TimeEntryID']); ?>">X</button>
+                </td>
+            </tr>
+        <?php endforeach;
+
+        echo "Gleitzeit in Industriestunden: " . $tableGesammtzeit;
+        ?>
+
         </tbody>
     </table>
+
 </div>
 
 <div id="manuelleEingabe" class="modal">
     <div class="modal-content">
         <span class="close" onclick="document.getElementById('manuelleEingabe').style.display='none'">Close &times;</span>
         <h2>Manuelle Zeiteingabe</h2>
-        <form id="manuelleEingabe" method="post" action="../api/add_table_entry.php">
-        <input type="hidden" name="user_id" id="user_id" value="<?php echo htmlspecialchars($user['user_id']) ?>">
-        <div class="form-group">
-        <label for="project2"><b>Project</b></label>
-        <select name="project2" id="project2">
-        <?php foreach($projectNames as $projectName): ?>
-        <option id="<?php echo htmlspecialchars($projectName['project_id']); ?>" value="<?php echo htmlspecialchars($projectName['project_id']); ?>"><?php echo htmlspecialchars($projectName['Projektname']); ?></option>
-        <?php endforeach; ?>
-        </select></div>
-        </br>
-        <div class="form-group">
-        <label for="tasks2"><b>Task</b></label>
-        <select name="tasks2" id="tasks2"></select></div>
-        </br>
-        <div class="form-group">
-        <label for="datePicker"><b>Select Date:</b></label>
-        <input type="date" id="datePicker" name="datePicker" onchange="contrDate('datePicker')" value="<?php echo date('Y-m-d'); ?>" required></div>
-        </br>
-        <div class="form-group">
-        <label for="startTime"><b>Start Time:</b></label>
-        <input type="time" id="startTime" name="startTime" value="<?php date_default_timezone_set('Europe/Berlin'); echo date('H:i'); ?>" required></div>
-        <br/><div class="form-group">
-        <label for="endTime"><b>End Time:</b></label>
-        <input type="time" id="endTime" name="endTime" required></div>
-        <br>
-        <div class="form-group">
-                <label for="approved_by"><b>Verantwortliche Person</b></label>
-                <select name="approved_by" id="approved_by">
-                    <?php foreach($responsiblePersons as $person): ?>
-                        <option value="<?php echo htmlspecialchars($person['user_id']); ?>"><?php echo htmlspecialchars($person['name']); ?></option>
+        <form id="manuelleEingabe2" method="post" action="/api/add_tableEntry.php">
+            <input type="hidden" name="user_id2" id="user_id2" value="<?php echo htmlspecialchars($user['user_id']) ?>">
+            <div class="form-group">
+                <label for="project2"><b>Project</b></label>
+                <select name="project2" id="project2">
+                    <?php foreach($projectNames as $projectName): ?>
+                        <option id="<?php echo htmlspecialchars($projectName['project_id']); ?>" value="<?php echo htmlspecialchars($projectName['project_id']); ?>"><?php echo htmlspecialchars($projectName['Projektname']); ?></option>
                     <?php endforeach; ?>
-                </select>
-            </div>
-        <button type="submit" class="button">Zeit hinzufügen</button></form>
+                </select></div>
+            </br>
+            <div class="form-group">
+                <label for="tasks2"><b>Task</b></label>
+                <select name="tasks2" id="tasks2"></select></div>
+            </br>
+            <div class="form-group">
+                <label for="datePicker2"><b>Select Date:</b></label>
+                <input type="date" id="datePicker2" name="datePicker2" onchange="contrDate('datePicker')" value="<?php echo date('Y-m-d'); ?>" required></div>
+            </br>
+            <div class="form-group">
+                <label for="startTime2"><b>Start Time:</b></label>
+                <input type="time" id="startTime2" name="startTime2" value="<?php date_default_timezone_set('Europe/Berlin'); echo date('H:i'); ?>" required></div>
+            <br/><div class="form-group">
+                <label for="endTime2"><b>End Time:</b></label>
+                <input type="time" id="endTime2" name="endTime2" required></div>
+            <br>
+            <button type="submit" class="button">Zeit hinzufügen</button>
+        </form>
     </div>
-</div>       
+</div>
+
+<div id="absencesEingabe" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="document.getElementById('absencesEingabe').style.display='none'">Close &times;</span>
+        <h2>Manuelle Zeiteingabe</h2>
+        <form id="absencesEingabe" method="post" action="/api/add_abcencesEntry.php">
+            <input type="hidden" name="user_idAbs" id="user_idAbs" value="<?php echo htmlspecialchars($user['user_id']) ?>">
+            <div class="form-group">
+                <label for="artAbsences"><b>Project</b></label>
+                <select name="artAbsences" id="artAbsences">
+                    <?php foreach($absTypes as $absType): ?>
+                        <option id="<?php echo htmlspecialchars($absType['type_id']); ?>" value="<?php echo htmlspecialchars($absType['type_id']); ?>"><?php echo htmlspecialchars($absType['type_name']); ?></option>
+                    <?php endforeach; ?>
+                </select></div>
+            </br>
+            <div class="form-group">
+                <label for="datePickerAbsencesStart"><b>Select Date:</b></label>
+                <input type="date" id="datePickerAbsencesStart" name="datePickerAbsencesStart" onchange="contrDate('datePicker')" value="<?php echo date('Y-m-d'); ?>" required></div>
+            </br>
+            <div class="form-group">
+                <label for="datePickerAbsencesEnd"><b>Select Date:</b></label>
+                <input type="date" id="datePickerAbsencesEnd" name="datePickerAbsencesEnd" onchange="contrDate('datePicker')" value="<?php echo date('Y-m-d'); ?>" required></div>
+            </br>
+            <button type="submit" class="button">Eintrag hinzufügen</button>
+        </form>
+    </div>
+</div
 </body>
 </html>

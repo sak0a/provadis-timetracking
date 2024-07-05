@@ -16,7 +16,7 @@ if (!Auth::isLoggedIn()) {
     exit();
 }
 
-$currentTab = "dashboard";
+$currentTab = "employees";
 
 $user = $_SESSION['user'];
 $benutzerId=htmlspecialchars($user['user_id']);
@@ -34,7 +34,7 @@ else{$benutzerRole= 'Mitarbeiter';}
  */
 // If no tab is set, set the default tab to dashboard
 if (!isset($_SESSION['admin__current_tab'])) {
-    $_SESSION['admin__current_tab'] = 'dashboard';
+    $_SESSION['admin__current_tab'] = 'employees';
 }
 // If a request is made to change the tab, set the new tab
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['tab'])) {
@@ -119,12 +119,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ajax']) && isset($_POS
                 <div class="mdc-list-group">
                     <nav class="mdc-list mdc-drawer-menu">
                         <div class="mdc-list-item mdc-drawer-item">
-                        <a class="mdc-drawer-link" onclick="switchContentTo('dashboard')">
-                                <i class="material-icons mdc-list-item__start-detail mdc-drawer-item-icon" aria-hidden="true">home</i>
-                                Dashboard
-                            </a>
-                        </div>
-                        <div class="mdc-list-item mdc-drawer-item">
                         <a class="mdc-drawer-link" onclick="switchContentTo('projects')">
                                 <i class="material-icons mdc-list-item__start-detail mdc-drawer-item-icon" aria-hidden="true">grid_on</i>
                                 Projekte
@@ -159,12 +153,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['ajax']) && isset($_POS
                 </div>
                 <div class="col-middle"></div>
                 <div class="col-right">
-                    <button onclick="window.location='/';" class="employee-view-btn gradient-border">
+                    <button onclick="window.location='/';" class="employee-view-btn">
                         <i class="material-icons">person</i>
                         <span class="ml-1">Mitarbeiteransicht</span>
                     </button>
                     <form method="post" class="admin-top-bar__logout_form">
-                        <button type="submit" class="logout-btn anmeldung_form gradient-border" id="logout" name="logout">
+                        <button type="submit" class="logout-btn anmeldung_form" id="logout" name="logout">
                             <i class="material-icons">logout</i>
                             <span class="ml-1">Logout</span>
                         </button>

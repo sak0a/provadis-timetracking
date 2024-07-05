@@ -1,11 +1,40 @@
 
-#modal-overlay
+
+.text-underlined
+    background-image: linear-gradient(#F3D046 0 0)
+    background-position: 50% 100% /*OR bottom left*/
+    background-size: 70% 3px
+    background-repeat: no-repeat
+    transition: background-size 0.3s, background-position 0s 0.3s
+#modal-overlay, #add-employee-modal-overlay, #add-project-modal-overlay
     @apply fixed inset-0 bg-black bg-opacity-50
-#modal
+#modal, #add-employee-modal, #add-project-modal
     opacity: 0
     transform: scale(0)
     transition: transform 0.3s ease, opacity 0.3s ease, width 0.3s ease, height 0.3s ease, left 0.3s ease, top 0.3s ease
     @apply fixed
+    .form-title
+        @apply text-underlined
+    .form-element
+        @apply mt-8 gap-4 grid grid-cols-2
+        .email-field, .password-field, .text-field, .date-field, .select-field
+            label
+                @apply text-gray-800 text-sm mb-2 block
+            .input-wrapper
+                .input-element
+                    @apply w-full text-gray-800 text-sm border-gray-300 px-4 py-3 rounded-md focus:border-secondary border-2
+        .bottom-content
+            @apply flex flex-wrap items-center justify-between gap-4
+        .login-button, .add-employee-submit-btn, .add-project-submit-btn
+            @apply bg-secondary text-primary px-4 py-2 text-lg text-center font-medium cursor-pointer -mt-0.5 w-full
+            transition: background 0.3s ease-in-out, box-shadow 0.3s ease-in-out
+            justify-content: end
+            border-radius: 50px
+            font-size: 16px // unused text-md
+            &:hover
+                @apply shadow-md shadow-secondary
+        .error-message
+            @apply text-center text-red-500 text-sm
     .modal-content
         @apply  bg-white rounded-2xl shadow-lg w-full h-full p-6 relative  max-h-full
         h2
@@ -16,7 +45,7 @@
                 @apply shadow-md shadow-secondary
             &.active-tab
                 @apply bg-primary text-secondary
-    #close-button
+    #close-button, #add-employee-close-button, #add-project-close-button
         width: 36px
         height: 36px
         @apply -top-4 -right-4 pt-0.5 absolute text-2xl text-center cursor-pointer bg-secondary text-primary rounded-full transition-all ease-in-out duration-300
@@ -35,14 +64,13 @@
         .description 
             @apply mt-2 text-sm text-black
         .add-employee-btn, .add-project-btn
-            @apply bg-secondary text-primary px-4 py-2 text-md inline-flex cursor-pointer -mt-0.5
-            box-shadow: 0 6px 18px -5px #172C3A
+            @apply bg-secondary text-primary px-4 py-2 text-md inline-flex cursor-pointer -mt-0.5 transition-all ease-in-out duration-300
             transition: background 0.3s ease-in-out, box-shadow 0.3s ease-in-out
             justify-content: end
             border-radius: 50px
             font-size: 16px // unused text-md
             &:hover
-                box-shadow: 0 2px 14px -5px #172C3A
+                @apply shadow-md shadow-secondary
     .employee-main-container, .projects-main-container
         @apply p-6 bg-white rounded-[20px]
     .employee-table-wrapper, .projects-table-wrapper
@@ -63,19 +91,32 @@
         #tableBody 
             @apply divide-y divide-secondary
             tr
-                .employee-number
+                .employee-number, .project-number
                     @apply flex justify-between pr-8
                     button
                         @apply bg-secondary text-primary ml-3 rounded-full px-2.5 py-0.5
-                .employee-mail
-                    @apply hover:text-primary transition-all duration-300 ease-in-out
-                .employee-mail a
-                    @apply hover:px-3 hover:py-1 hover:bg-secondary hover:rounded-xl
+                        @apply transition-all duration-300 ease-in-out
+                        &:hover
+                            @apply shadow-md shadow-secondary
+                .employee-mail:hover a
+                    @apply transition-all duration-300 ease-in-out
+                    @apply text-primary px-3 py-1 bg-secondary rounded-full
+
             td 
                 font-weight: 500
                 @apply whitespace-nowrap text-base text-secondary py-3
 
-
+.pagination_btn_unselected
+    @apply relative z-10 outline-2 outline-secondary inline-flex px-3 items-center bg-secondary text-primary text-sm font-semibold focus:z-20 focus-visible:outline focus-visible:outline-2
+    &:hover
+        @apply outline-primary
+.pagination_btn_selected
+    @apply relative z-10 inline-flex px-3 items-center bg-primary text-secondary text-sm font-semibold focus:z-20 focus-visible:outline focus-visible:outline-2
+.pagination_btn_arrow
+    @apply relative inline-flex text-lg bg-secondary text-primary items-center px-3 focus:z-20
+    @apply transition-all duration-300 ease-in-out
+    &:hover
+        @apply bg-primary text-secondary
 .admin-top-bar
     @apply items-center flex justify-between bg-white text-white
     transition: background-color 0.3s ease-in-out
@@ -103,29 +144,23 @@
         display: inline-block
         padding-bottom: 2px
         background-image: linear-gradient(#F3D046 0 0)
-        background-position: 0 100% /*OR bottom left*/
-        background-size: 0 2px
+        background-position: 0% 100% /*OR bottom left*/
+        background-size: 100% 3px
         background-repeat: no-repeat
         transition: background-size 0.3s, background-position 0s 0.3s
-        /*change after the size immediately*/
-        &:hover 
-            background-position: 100% 100% /*OR bottom right*/
-            background-size: 100% 2px
     .employee-number 
         @apply text-black font-semibold
-    .employee-view-btn, .logout-btn 
-        transition: background 0.3s ease-in-out, box-shadow 0.3s ease-in-out
+    .employee-view-btn, .logout-btn
         display: inline-flex
         justify-content: end
         border-radius: 50px
         cursor: pointer
         padding: 0.5rem 1rem
         font-size: 16px
-        color: #000
-        box-shadow:  0 2px 4px -1px rgba(0, 0, 0, 0.4)
-        &:hover 
-            box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12)
-        i 
+        @apply bg-secondary text-primary transition-all ease-in-out duration-300
+        &:hover
+            @apply shadow-md shadow-secondary
+        i
             font-size: 24px
     .logout-btn 
         margin-top: -2px
@@ -142,18 +177,60 @@
             .description 
                 @apply text-normal
             .add-employee-btn, .add-project-btn
-                @apply bg-black text-normal
+                @apply bg-primary text-secondary
         .employee-table-wrapper, .projects-table-wrapper
             .table-head-titles 
                 th 
                     @apply text-white
             #tableBody 
                 @apply divide-normal
+                .employee-number, .project-number
+                    button
+                        @apply bg-primary text-secondary
+                .employee-mail:hover a
+                    @apply bg-primary text-secondary
                 td 
                     @apply text-gray-300
+
+
+    #modal, #add-employee-modal, #add-project-modal
+        .form-title
+            color: white !important
+            @apply text-underlined
+        .form-element
+            .email-field, .password-field, .text-field, .date-field, .select-field
+                label
+                    @apply text-gray-300
+                .input-wrapper
+                    .input-element
+                        @apply focus:border-primary bg-dark-secondary text-primary
+            .login-button, .add-employee-submit-btn, .add-project-submit-btn
+                @apply bg-primary text-secondary
+                &:hover
+                    @apply shadow-md shadow-primary
+            .error-message
+                @apply text-red-500
+        .modal-content
+            @apply bg-dark-primary
+            h2
+                @apply text-primary
+            .left-tab-button, .right-tab-button
+                @apply bg-secondary text-primary
+                &:not(.active-tab):hover
+                    @apply shadow-md shadow-secondary
+                &.active-tab
+                    @apply bg-primary text-secondary
+        #close-button, #add-employee-close-button, #add-project-close-button
+            @apply bg-primary text-secondary
+            &:hover
+                @apply shadow-sm shadow-primary
+
+
     .admin-top-bar 
         @apply text-white bg-[#202020]
         .employee-name, .employee-number
             @apply text-[#cdcdcd]
         .employee-view-btn, .logout-btn 
-            @apply text-white bg-black
+            @apply bg-primary text-secondary
+            &:hover
+                @apply shadow-md shadow-primary

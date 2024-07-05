@@ -158,7 +158,7 @@ function getUsersAJAX(): string {
                 <h1 class="title">Benutzerverwaltung</h1>
                 <p class="description">Verwalten Sie alle Mitarbeiter ihres Unternehmens</p>
             </div>
-            <button class="add-employee-btn" onclick="document.getElementById('addUserModal').style.display='block'">
+            <button class="add-employee-btn">
                 <i class="material-icons">add</i>
                 <span class="ml-1">Benutzer hinzufügen</span>
             </button>
@@ -317,12 +317,87 @@ function getUsersAJAX(): string {
     </div>
 </div>
 
+
+<div id="add-employee-modal-overlay" class="hidden" style="z-index: 98"></div>
+<div id="add-employee-modal" class="hidden" style="z-index: 99">
+    <div class="modal-content">
+        <h2 class="form-title">Neuen Benutzer hinzufügen</h2>
+        <form class="form-element" action="../backend/add_user.php" method="post">
+            <div class="text-field">
+                <label>Personalnummer</label>
+                <div class="input-wrapper">
+                    <input name="personal_number" type="text" required class="input-element" placeholder="Personalnummer eingeben" />
+                </div>
+            </div>
+
+            <div class="email-field">
+                <label>E-Mail</label>
+                <div class="input-wrapper">
+                    <input name="email" type="email" required class="input-element" placeholder="E-Mail eingeben" />
+                </div>
+            </div>
+
+            <div class="text-field">
+                <label>Vorname</label>
+                <div class="input-wrapper">
+                    <input name="first_name" type="text" required class="input-element" placeholder="Vorname eingeben" />
+                </div>
+            </div>
+
+            <div class="text-field">
+                <label>Nachname</label>
+                <div class="input-wrapper">
+                    <input name="last_name" type="text" required class="input-element" placeholder="Nachname eingeben" />
+                </div>
+            </div>
+
+            <div class="date-field">
+                <label>Geburtsdatum</label>
+                <div class="input-wrapper">
+                    <input name="birthdate" type="date" required class="input-element" placeholder="Personalnummer eingeben" />
+                </div>
+            </div>
+
+            <div class="password-field">
+                <label>Passwort</label>
+                <div class="input-wrapper">
+                    <input name="password" type="password" required class="input-element" placeholder="Passwort eingeben" />
+                </div>
+            </div>
+
+            <div class="select-field">
+                <label>Rolle</label>
+                <div class="input-wrapper">
+                    <select name="role_id" required class="input-element">
+                        <option value="6">Admin</option>
+                        <option value="7">Projektleiter</option>
+                        <option value="8">Mitarbeiter</option>
+                    </select>
+                </div>
+            </div>
+            <div class="!mt-8 col-span-2">
+                <button type="submit" class="add-employee-submit-btn">
+                    Benutzer hinzufügen
+                </button>
+            </div>
+            <?php
+            if (isset($_SESSION['error'])) {
+                echo '<div class="error-message">' . $_SESSION['error'] . '</div>';
+                unset($_SESSION['error']);
+            }
+            ?>
+        </form>
+        <i id="add-employee-close-button" class="material-icons" style="z-index: 100;">close</i>
+    </div>
+</div>
+
 <!-- Modal for more details -->
 <div id="modal-overlay" class="hidden" style="z-index: 98"></div>
 <div id="modal" class="hidden" style="z-index: 99">
     <div class="modal-content">
         <div class="grid grid-cols-3 gap-4 h-full">
             <div class="col-span-2">
+                <h2 class="text-underlined-full mb-3 employee-name">Infos über <span class="employee-name">Alexandros</span></h2>
                 <div class="mb-4 flex flex-wrap justify-center gap-2">
                     <button class="left-tab-button flex-grow px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded" data-tab="1">Benutzerdetails</button>
                     <button class="left-tab-button flex-grow px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded " data-tab="5">Projekte und Aufgaben</button>
@@ -331,6 +406,7 @@ function getUsersAJAX(): string {
                 <div class="tab-content hidden" data-content="5"></div>
             </div>
             <div class="col-span-1">
+                <h2 class="text-underlined mb-3">Statistik</h2>
                 <div class="mb-4 flex flex-wrap justify-center gap-2">
                     <button class="right-tab-button flex-grow px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded" data-tab="6">1 Monat</button>
                     <button class="right-tab-button flex-grow px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded" data-tab="7">3 Monate</button>

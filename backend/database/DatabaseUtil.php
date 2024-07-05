@@ -1,5 +1,6 @@
 <?php
 namespace backend\database;
+use backend\database\Database;
 use backend\database\Filter;
 use mysqli;
 
@@ -12,6 +13,95 @@ class DatabaseUtil
     {
         $this->database = $db;
     }
+
+    public function checkForAbsenceOverlap($user_id, $datePickerAbsencesStart, $datePickerAbsencesEnd): bool
+    {
+        // Überprüfen, ob es bestehende Überschneidungen gibt
+        $checkSql = "SELECT COUNT(*) FROM Absences WHERE user_id = ? AND 
+                 NOT (end_date < ? OR start_date > ?)";
+        $checkStmt = $this->database->prepare($checkSql);
+        $checkStmt->bind_param('iss',
+            $user_id,
+            $datePickerAbsencesStart,
+            $datePickerAbsencesEnd);
+        $checkStmt->execute();
+        $checkStmt->bind_result($count);
+        $checkStmt->fetch();
+        $checkStmt->close();
+
+        // Wenn keine Überschneidungen gefunden wurden, true zurückgeben
+        return $count == 0;
+    }
+
+
+    public function checkForOverlap($user_id, $start_date, $end_date): bool
+    {
+        // Überprüfen, ob es Überschneidungen mit Absences gibt
+        $checkAbsencesSql = "SELECT COUNT(*) FROM Absences WHERE user_id = ? AND 
+                         NOT (end_date < ? OR start_date > ?)";
+        $checkAbsencesStmt = $this->database->prepare($checkAbsencesSql);
+        $checkAbsencesStmt->bind_param('iss',
+            $user_id,
+            $start_date,
+            $end_date);
+        $checkAbsencesStmt->execute();
+        $checkAbsencesStmt->bind_result($countAbsences);
+        $checkAbsencesStmt->fetch();
+        $checkAbsencesStmt->close();
+
+        // Überprüfen, ob es Überschneidungen mit timeentries gibt (nur das Datum von start_time berücksichtigen)
+        $checkTimeEntriesSql = "SELECT COUNT(*) FROM TimeEntries WHERE user_id = ? AND 
+                            DATE(start_time) = DATE(?)";
+        $checkTimeEntriesStmt = $this->database->prepare($checkTimeEntriesSql);
+        $checkTimeEntriesStmt->bind_param('is',
+            $user_id,
+            $start_date);
+        $checkTimeEntriesStmt->execute();
+        $checkTimeEntriesStmt->bind_result($countTimeEntries);
+        $checkTimeEntriesStmt->fetch();
+        $checkTimeEntriesStmt->close();
+
+        // Wenn keine Überschneidungen gefunden wurden, true zurückgeben
+        return $countAbsences == 0 && $countTimeEntries == 0;
+    }
+
+    public function createAbsencesEntry($user_id, $artAbsences, $datePickerAbsencesStart, $datePickerAbsencesEnd): bool
+    {
+        // Überprüfen, ob das Enddatum nach oder gleich dem Startdatum liegt
+        if (strtotime($datePickerAbsencesEnd) < strtotime($datePickerAbsencesStart)) {
+            // Wenn das Enddatum vor dem Startdatum liegt, false zurückgeben
+            echo "<script>alert('Das Enddatum muss nach oder gleich dem Startdatum liegen.');window.location.href='http://localhost:3001/';</script>";
+            return false;
+        }
+
+        // Überprüfen, ob es Überschneidungen mit Absences oder TimeEntries gibt
+        if (!$this->checkForOverlap($user_id, $datePickerAbsencesStart, $datePickerAbsencesEnd)) {
+            // Wenn Überschneidungen gefunden wurden, false zurückgeben
+    echo "<script>alert('Es gibt eine Überschneidung mit einem vorhandenen Eintrag.');window.location.href='http://localhost:3001/';</script>";
+            return false;
+        }
+
+        // Überprüfen, ob das Startdatum und das Enddatum im aktuellen Monat liegen
+        $aktuellerMonatStart = date('Y-m-01');
+        $aktuellerMonatEnde = date('Y-m-t');
+        if (strtotime($datePickerAbsencesStart) < strtotime($aktuellerMonatStart) || strtotime($datePickerAbsencesEnd) > strtotime($aktuellerMonatEnde)) {
+            // Wenn das Startdatum oder Enddatum nicht im aktuellen Monat liegt, false zurückgeben
+            echo "<script>alert('Das Startdatum und das Enddatum müssen im aktuellen Monat liegen.');window.location.href='http://localhost:3001/';</script>";
+            return false;
+        }
+
+        // Eintrag einfügen
+        $sql = "INSERT INTO Absences (user_id, type_id, start_date, end_date) VALUES (?, ?, ?, ?)";
+        $stmt = $this->database->prepare($sql);
+        $stmt->bind_param('iiss', $user_id, $artAbsences, $datePickerAbsencesStart, $datePickerAbsencesEnd);
+        $result = $stmt->execute();
+        $stmt->close();
+
+        // Rückgabe des Einfügeergebnisses
+        return $result;
+    }
+
+
 
     public function getProjectCountByFilter(Filter $filter): int
     {
@@ -311,6 +401,18 @@ class DatabaseUtil
         $result = $stmt->get_result();
         return $result->fetch_assoc() !== null;
     }
+
+    public function getUserById($userId): array
+    {
+        $sql = "SELECT * FROM Users WHERE user_id = ?";
+        $stmt = $this->database->prepare($sql);
+        $stmt->bind_param("i", $userId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $user = $result->fetch_assoc();
+        $stmt->close();
+        return $user;
+    }
     public function getUserByEmail($email): false|array|null
     {
         $sql = "SELECT * FROM Users WHERE email = ?";
@@ -411,12 +513,76 @@ class DatabaseUtil
         $stmt->bind_param("i", $personalNumber);
         $stmt->execute();
         $result = $stmt->get_result();
-    
+
         $details = $result->fetch_assoc();
         return $details ? $details : null;
     }
+
+    //zeiten
+
+    public function getSaldo($user_id): string
+    {
+        $sql = "SELECT SEC_TO_TIME(SUM(
+                TIME_TO_SEC(TIMEDIFF(te.end_time, te.start_time)) - 7.5 * 3600
+            )) AS GesamtSaldo
+            FROM
+                TimeEntries te
+            WHERE
+                te.user_id = ?
+                AND te.start_time >= DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH);";
+
+        $stmt = $this->database->prepare($sql);
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        $saldo = $row['GesamtSaldo'];
+
+        // Falls kein Saldo vorhanden ist oder NULL ist, gib "00:00" zurück
+        if ($saldo === null || $saldo === '00:00:00') {
+            return "00:00";
+        }
+
+        // Überprüfe, ob der Saldo negativ ist und passe das Format entsprechend an
+        if (substr($saldo, 0, 1) == '-') {
+            $saldo = '-' . substr($saldo, 1, 5); // Negative Zeichen und hh:mm extrahieren
+        } else {
+            $saldo = substr($saldo, 0, 5); // Nur hh:mm extrahieren
+        }
+
+        // Umrechnung in Industrieminuten
+        $saldo_industrial_minutes = $this->convertToIndustrialMinutes($saldo);
+
+        return round($saldo_industrial_minutes / 60,2);
+    }
+
+    public function convertToIndustrialMinutes($saldo_hh_mm): int
+    {
+        // Überprüfen, ob das Saldo negativ ist und entsprechend das Vorzeichen speichern
+        $is_negative = substr($saldo_hh_mm, 0, 1) == '-';
+
+        // Entfernen des Vorzeichens, falls vorhanden, um die Stunden und Minuten korrekt zu extrahieren
+        if ($is_negative) {
+            $saldo_hh_mm = ltrim($saldo_hh_mm, '-');
+        }
+
+        // Aufteilen von Stunden und Minuten aus dem hh:mm Format
+        list($hours, $minutes) = explode(':', $saldo_hh_mm);
+
+        // Konvertierung der Zeit in Minuten
+        $total_minutes = ($hours * 60) + $minutes;
+
+        // Anwenden des Vorzeichens, falls das Saldo negativ ist
+        if ($is_negative) {
+            $total_minutes *= -1;
+        }
+
+        return $total_minutes;
+    }
+
     // Informationen für den Nutzer aufrufen
-    public function getUserDetails($personalNumber): ?array
+    public function getUserDetails($personalNumber, $projectId = null): ?array
     {
         $userDetails = [];
 
@@ -450,25 +616,25 @@ class DatabaseUtil
         $userDetails['hours'] = $resultHours->fetch_assoc();
 
         $sqlGeneralHours = "SELECT
-        COALESCE(SUM(CASE WHEN te.start_time >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH) AND te.project_id = 184  THEN TIMESTAMPDIFF(HOUR, te.start_time, te.end_time) ELSE 0 END), 0) AS hours_last_month_allg_Arbeit,
-        COALESCE(SUM(CASE WHEN te.start_time >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH) AND te.project_id = 184  THEN TIMESTAMPDIFF(HOUR, te.start_time, te.end_time) ELSE 0 END), 0) AS hours_last_3_months_allg_Arbeit,
-        COALESCE(SUM(CASE WHEN te.start_time >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH) AND te.project_id = 184  THEN TIMESTAMPDIFF(HOUR, te.start_time, te.end_time) ELSE 0 END), 0) AS hours_last_6_months_allg_Arbeit,
-        COALESCE(SUM(CASE WHEN te.project_id = 184 THEN TIMESTAMPDIFF(HOUR, te.start_time, te.end_time) ELSE 0 END), 0) AS total_hours_allg_Arbeit
-        FROM TimeEntries te
-        WHERE te.user_id = ?";
+                            COALESCE(SUM(CASE WHEN te.start_time >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH) AND te.project_id = 184  THEN TIMESTAMPDIFF(HOUR, te.start_time, te.end_time) ELSE 0 END), 0) AS hours_last_month_allg_Arbeit,
+                            COALESCE(SUM(CASE WHEN te.start_time >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH) AND te.project_id = 184  THEN TIMESTAMPDIFF(HOUR, te.start_time, te.end_time) ELSE 0 END), 0) AS hours_last_3_months_allg_Arbeit,
+                            COALESCE(SUM(CASE WHEN te.start_time >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH) AND te.project_id = 184  THEN TIMESTAMPDIFF(HOUR, te.start_time, te.end_time) ELSE 0 END), 0) AS hours_last_6_months_allg_Arbeit,
+                            COALESCE(SUM(CASE WHEN te.project_id = 184 THEN TIMESTAMPDIFF(HOUR, te.start_time, te.end_time) ELSE 0 END), 0) AS total_hours_allg_Arbeit
+                            FROM TimeEntries te
+                            WHERE te.user_id = ?";
         $stmtGeneralHours = $this->database->prepare($sqlGeneralHours);
         $stmtGeneralHours->bind_param("i", $userId);
         $stmtGeneralHours->execute();
         $resultGeneralHours = $stmtGeneralHours->get_result();
         $userDetails['general_hours'] = $resultGeneralHours->fetch_assoc();
 
-        $sqlAbsences ="SELECT
-        COALESCE(SUM(CASE WHEN a.start_date >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH) THEN DATEDIFF(a.end_date, a.start_date) + 1 ELSE 0 END), 0) AS days_last_month_absences,
-        COALESCE(SUM(CASE WHEN a.start_date >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH) THEN DATEDIFF(a.end_date, a.start_date) + 1 ELSE 0 END), 0) AS days_last_3_months_absences,
-        COALESCE(SUM(CASE WHEN a.start_date >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH) THEN DATEDIFF(a.end_date, a.start_date) + 1 ELSE 0 END), 0) AS days_last_6_months_absences,
-        COALESCE(SUM(DATEDIFF(a.end_date, a.start_date) + 1), 0) AS total_days_absences
-        FROM Absences a
-        WHERE a.user_id = ?";
+        $sqlAbsences = "SELECT
+                        COALESCE(SUM(CASE WHEN a.start_date >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH) THEN DATEDIFF(a.end_date, a.start_date) + 1 ELSE 0 END), 0) AS days_last_month_absences,
+                        COALESCE(SUM(CASE WHEN a.start_date >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH) THEN DATEDIFF(a.end_date, a.start_date) + 1 ELSE 0 END), 0) AS days_last_3_months_absences,
+                        COALESCE(SUM(CASE WHEN a.start_date >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH) THEN DATEDIFF(a.end_date, a.start_date) + 1 ELSE 0 END), 0) AS days_last_6_months_absences,
+                        COALESCE(SUM(DATEDIFF(a.end_date, a.start_date) + 1), 0) AS total_days_absences
+                        FROM Absences a
+                        WHERE a.user_id = ?";
         $stmtAbsences = $this->database->prepare($sqlAbsences);
         $stmtAbsences->bind_param("i", $userId);
         $stmtAbsences->execute();
@@ -498,16 +664,54 @@ class DatabaseUtil
                         LEFT JOIN 
                             Tasks t ON p.project_id = t.project_id
                         WHERE 
-                            ur.user_id = ?";
+                            ur.user_id = ? LIMIT 5";
         $stmtProjects = $this->database->prepare($sqlProjects);
-        $stmtProjects->bind_param("ii",  $userDetails['user']['user_id'], $userDetails['user']['user_id']);
+        $stmtProjects->bind_param("ii", $userId, $userId);
         $stmtProjects->execute();
         $resultProjects = $stmtProjects->get_result();
         $userDetails['projects'] = $resultProjects->fetch_all(MYSQLI_ASSOC);
 
+        if ($projectId !== null) {
+            // Spezifische Projektstunden und Status "approved_by" abrufen
+            $sqlApprovedNull = "SELECT 
+                                    p.project_id,
+                                    p.project_name,
+                                    p.start_date,
+                                    p.end_date,
+                                    ps.status_name AS project_status,
+                                    t.task_id,
+                                    t.task_name,
+                                    t.created_at,
+                                    t.updated_at,
+                                    (SELECT COALESCE(SUM(TIMESTAMPDIFF(HOUR, te.start_time, te.end_time)), 0)
+                                     FROM TimeEntries te
+                                     WHERE te.project_id = p.project_id 
+                                     AND te.user_id = ? 
+                                     AND te.start_time >= DATE_SUB(LAST_DAY(DATE_SUB(CURDATE(), INTERVAL 1 MONTH)), INTERVAL DAY(LAST_DAY(DATE_SUB(CURDATE(), INTERVAL 1 MONTH))) - 1 DAY)
+                                     AND te.start_time < DATE_ADD(DATE_SUB(CURDATE(), INTERVAL DAY(CURDATE()) DAY), INTERVAL 1 DAY)
+                                     AND te.approved_by IS NULL) AS total_hours_on_project_last_month
+                                FROM 
+                                    Projects p
+                                LEFT JOIN 
+                                    UserRoles ur ON p.project_id = ur.project_id
+                                LEFT JOIN 
+                                    ProjectStatus ps ON p.status_id = ps.status_id
+                                LEFT JOIN 
+                                    Tasks t ON p.project_id = t.project_id
+                                WHERE 
+                                    ur.user_id = ? AND
+                                    p.project_id = ?";
+            $stmtApprovedNull = $this->database->prepare($sqlApprovedNull);
+            $stmtApprovedNull->bind_param("iii", $userId, $userId, $projectId);
+            $stmtApprovedNull->execute();
+            $resultApprovedNull = $stmtApprovedNull->get_result();
+            $userDetails["approved_null"] = $resultApprovedNull->fetch_assoc();
+        }
+
         return $userDetails;
     }
-/**
+
+    /**
      * @param Filter $filter Filter to apply
      * @param Number $page Page number
      * @param Number $pageSize Number of messages per page
@@ -716,16 +920,17 @@ GROUP BY
                 ps.status_name, 
                 p.planned_time
         ";
-    
+
         $stmt = $this->database->prepare($sqlProjectDetails);
         $stmt->bind_param("i", $projectId);
         $stmt->execute();
-        $result = $stmt->get_result();        
+        $result = $stmt->get_result();
         //$details = $result->fetch_assoc();
         $details["getProjectDetails"] = $result->fetch_assoc();
 
         $sqlProjectWorkers = "
             SELECT 
+            u.personal_number,
                 u.user_id,
                 u.first_name,
                 u.last_name
@@ -736,17 +941,17 @@ GROUP BY
             WHERE 
                 ur.project_id = ?
         ";
-    
+
         $stmt = $this->database->prepare($sqlProjectWorkers);
         $stmt->bind_param("i", $projectId);
         $stmt->execute();
         $result = $stmt->get_result();
-        
+
         $workers = [];
         while ($row = $result->fetch_assoc()) {
             $workers[] = $row;
         }
-    
+
         $details['workers'] = $workers;
         return $details;
     }
@@ -812,7 +1017,7 @@ GROUP BY
     // Erstellen eines Zeiteintrags
     public function createTimeEntry($user_id, $project_id, $task_id, $start_time, $end_time, $approved_by)
     {
-        
+
         $sql = "INSERT INTO TimeEntries (user_id, project_id, task_id, start_time, end_time, approved_by) VALUES (?, ?, ?, ?, ?, ?)";
         $stmt = $this->database->prepare($sql);
         return $stmt->execute([$user_id, $project_id, $task_id, $start_time, $end_time, $approved_by]);
@@ -835,6 +1040,41 @@ GROUP BY
         $stmt = $this->database->prepare($sql);
         return $stmt->execute([$start_time->format('Y-m-d H:i:s'), $end_time->format('Y-m-d H:i:s'), $duration, $description, $time_entry_id]);
     }
+    //zeiten
+
+    public function getAbsencesTableContent($user_id): array
+    {
+        $sql="SELECT
+            at.type_name as 'Art',
+            abs.start_date as 'StartDatum',
+            abs.end_date as 'EndDatum',
+            abs.absence_id as 'AbsenceID'
+        FROM
+            Absences abs
+        JOIN
+            AbsenceTypes at ON abs.type_id = at.type_id
+        WHERE
+            abs.user_id = ?
+            AND abs.start_date >= DATE_SUB(CURRENT_DATE(), INTERVAL 3 MONTH)
+        ORDER BY
+            abs.start_date DESC";
+
+
+        $stmt = $this->database->prepare($sql);
+        $stmt->bind_param("i", $user_id);  // Bindung des Parameters user_id
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $tableContent = [];
+
+        while ($row = $result->fetch_assoc()) {
+            $tableContent[] = $row;
+        }
+
+        $stmt->close();  // Schließen des Statements
+
+        return $tableContent;
+    }
+
 
     // Löschen eines Zeiteintrags
     public function deleteTimeEntry($time_entry_id)
@@ -895,42 +1135,40 @@ GROUP BY
     }
     public function getTableContent($user_id): array
     {
-        $sql = "SELECT 
-    ti.time_entry_id AS 'TimeEntryID',
-    p.project_name AS 'Projektname',
-    t.task_name AS 'Taskname',
-    DATE(ti.start_time) AS 'Datum',
-    TIME_FORMAT(ti.start_time, '%H:%i') AS 'StartZeit',
-    TIME_FORMAT(ti.end_time, '%H:%i') AS 'EndZeit'
-FROM 
-    TimeEntries ti
-INNER JOIN 
-    Users u ON ti.user_id = u.user_id
-LEFT JOIN  
-    UserRoles ur ON u.user_id = ur.user_id
-LEFT JOIN 
-    Projects p ON ur.project_id = p.project_id
-LEFT JOIN
-    Tasks t ON ti.task_id = t.task_id
-WHERE 
-    u.user_id = ?
-AND
-    ti.start_time >= DATE_SUB(CURDATE(), INTERVAL 2 MONTH)
-GROUP BY
-    ti.time_entry_id
-ORDER BY
-    DATE(ti.start_time) DESC;
-";
+        $sql = "SELECT
+            te.start_time,
+            DATE_FORMAT(te.start_time, '%Y-%m-%d') AS 'Datum',
+            DATE_FORMAT(FROM_UNIXTIME(ROUND(UNIX_TIMESTAMP(te.start_time) / (15 * 60)) * (15 * 60)), '%H:%i') AS 'StartZeit',
+            DATE_FORMAT(FROM_UNIXTIME(ROUND(UNIX_TIMESTAMP(te.end_time) / (15 * 60)) * (15 * 60)), '%H:%i') AS 'EndZeit',
+            te.end_time,
+            t.task_name AS 'Taskname',
+            p.project_name AS 'Projektname',
+            te.time_entry_id AS 'TimeEntryID',
+            TIME_FORMAT(SEC_TO_TIME(TIME_TO_SEC(te.end_time) - TIME_TO_SEC(te.start_time) - 7.5 * 3600), '%H:%i') AS 'Saldo'
+        FROM
+            TimeEntries te
+        JOIN
+            Tasks t ON te.task_id = t.task_id
+        JOIN
+            Projects p ON te.project_id = p.project_id
+        WHERE
+            te.user_id = ?
+            AND te.start_time >= DATE_SUB(CURRENT_DATE(), INTERVAL 1 MONTH)
+        ORDER BY
+            te.start_time DESC";
 
         $stmt = $this->database->prepare($sql);
         $stmt->bind_param("i", $user_id);  // Bindung des Parameters user_id
         $stmt->execute();
         $result = $stmt->get_result();
         $tableContent = [];
+
         while ($row = $result->fetch_assoc()) {
-            $tableContent[] = $row;  // Speichert nur den Projektnamen
+            $tableContent[] = $row;
         }
+
         $stmt->close();  // Schließen des Statements
+
         return $tableContent;
     }
 
@@ -972,9 +1210,9 @@ ORDER BY
 
     // create Table entry if there are no overlaps
     public function createTableEntry($user_id, $project_name, $task_name, $start_time, $end_time, $approved_by)
-{
-    // Überprüfen auf Überschneidungen und Dopplungen
-    $sql_check = "SELECT COUNT(*) AS count FROM TimeEntries 
+    {
+        // Überprüfen auf Überschneidungen und Dopplungen
+        $sql_check = "SELECT COUNT(*) AS count FROM TimeEntries 
                   WHERE user_id = ? 
                   AND DATE(start_time) = DATE(?) 
                   AND (
@@ -983,39 +1221,92 @@ ORDER BY
                       (start_time >= ? AND end_time <= ?)
                   )";
 
-    $stmt_check = $this->database->prepare($sql_check);
-    $stmt_check->bind_param("isssssss", $user_id, $start_time, $start_time, $start_time, $end_time, $end_time, $start_time, $end_time);
-    $stmt_check->execute();
-    $stmt_check->store_result(); // Ergebnis der Abfrage im Speicher halten
-    $stmt_check->bind_result($count);
-    $stmt_check->fetch(); // Ergebnis abrufen und verarbeiten
+        $stmt_check = $this->database->prepare($sql_check);
+        $stmt_check->bind_param("isssssss", $user_id, $start_time, $start_time, $start_time, $end_time, $end_time, $start_time, $end_time);
+        $stmt_check->execute();
+        $stmt_check->store_result(); // Ergebnis der Abfrage im Speicher halten
+        $stmt_check->bind_result($count);
+        $stmt_check->fetch(); // Ergebnis abrufen und verarbeiten
 
-    if ($count == 0) {
-        // Falls keine Überschneidungen gefunden wurden, Daten einfügen
-        $sql_insert = "INSERT INTO TimeEntries (user_id, project_id, task_id, start_time, end_time, approved_by) 
+        if ($count == 0) {
+            // Falls keine Überschneidungen gefunden wurden, Daten einfügen
+            $sql_insert = "INSERT INTO TimeEntries (user_id, project_id, task_id, start_time, end_time, approved_by) 
                        VALUES (?, ?, ?, ?, ?, ?)";
-        $stmt_insert = $this->database->prepare($sql_insert);
-        $stmt_insert->bind_param("iiisss", $user_id, $project_name, $task_name, $start_time, $end_time, $approved_by);
-        $success = $stmt_insert->execute();
+            $stmt_insert = $this->database->prepare($sql_insert);
+            $stmt_insert->bind_param("iiisss", $user_id, $project_name, $task_name, $start_time, $end_time, $approved_by);
+            $success = $stmt_insert->execute();
 
-        if ($success) {
-            $stmt_check->free_result(); // Freigabe der vorherigen Abfrageergebnisse
-            return true;
+            if ($success) {
+                $stmt_check->free_result(); // Freigabe der vorherigen Abfrageergebnisse
+                return true;
+            } else {
+                $stmt_check->free_result(); // Freigabe der vorherigen Abfrageergebnisse
+                //echo "<script>console.error('Fehler beim Einfügen des Eintrags.');</script>";
+                return false;
+            }
         } else {
+            // Falls Überschneidungen gefunden wurden, Fehlermeldung ausgeben und Einfügen abbrechen
             $stmt_check->free_result(); // Freigabe der vorherigen Abfrageergebnisse
-            //echo "<script>console.error('Fehler beim Einfügen des Eintrags.');</script>";
+            //echo "<script>alert('Es gibt eine Überschneidung mit einem vorhandenen Eintrag.');</script>";
+
             return false;
+
         }
-    } else {
-        // Falls Überschneidungen gefunden wurden, Fehlermeldung ausgeben und Einfügen abbrechen
-        $stmt_check->free_result(); // Freigabe der vorherigen Abfrageergebnisse
-        //echo "<script>alert('Es gibt eine Überschneidung mit einem vorhandenen Eintrag.');</script>";
-        
-        return false;
-        
+
     }
-    
-}
+
+// manager abfrage
+    public function getManagerProjects($user_id) {
+        $sql = "SELECT p.project_id, p.project_name, p.start_date, p.end_date, ps.status_name
+            FROM Projects p
+            INNER JOIN UserRoles ur ON p.project_id = ur.project_id
+            INNER JOIN ProjectStatus ps ON p.status_id = ps.status_id
+            WHERE ur.user_id = ? AND ur.role_id = 7";
+        $stmt = $this->database->prepare($sql);
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $projects = $result->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
+        return $projects;
+    }
+
+//zugehörige mitarbeiter in dem Projekt
+
+    public function getManagerEmployees($user_id) {
+        $sql = "SELECT DISTINCT 
+    u.personal_number, 
+    u.first_name, 
+    u.last_name, 
+    u.email, 
+    r.role_name, 
+    u.entry_date,
+    p.project_id,
+    p.project_name
+FROM 
+    Users u
+INNER JOIN 
+    UserRoles ur ON u.user_id = ur.user_id
+INNER JOIN 
+    Roles r ON ur.role_id = r.role_id
+INNER JOIN 
+    Projects p ON ur.project_id = p.project_id
+WHERE 
+    ur.project_id IN (
+        SELECT p.project_id 
+        FROM Projects p
+        INNER JOIN UserRoles ur ON p.project_id = ur.project_id
+        WHERE ur.user_id = ? AND ur.role_id = 7)";
+        $stmt = $this->database->prepare($sql);
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $employees = $result->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
+        return $employees;
+    }
+
+
 
     public function getTasksByProject($projectId) {
         $sql = "SELECT task_id, task_name FROM Tasks WHERE project_id = ?";
@@ -1044,4 +1335,6 @@ ORDER BY
         return $responsiblePersons;
     }
 }
+
+
 ?>

@@ -1,3 +1,6 @@
+/**
+ * Cookie Helper Functions
+ */
 function setCookie(name, value, days) {
     let expires = "";
     if (days) {
@@ -19,10 +22,10 @@ function getCookie(name) {
     return null;
 }
 
-document.addEventListener("DOMContentLoaded", function() {
-    /**
-     * Dark mode toggle functionality . START
-     */
+/**
+ *  Dark Mode Theme Toggle Function
+ */
+function handleDarkModeCookie() {
     document.getElementById("theme-toggle").addEventListener("click", function() {
         document.documentElement.classList.toggle("dark-mode");
         // Save dark mode preference in a cookie
@@ -34,12 +37,14 @@ document.addEventListener("DOMContentLoaded", function() {
             setCookie("darkMode", "disabled", 365);
         }
     });
-
     // Check for dark mode cookie
     if (getCookie("darkMode") === "enabled") {
         document.documentElement.classList.add("dark-mode");
     }
-    /**
-     * Dark mode toggle functionality . END
-     */
+}
+
+
+
+document.addEventListener("DOMContentLoaded", function() {
+    handleDarkModeCookie();
 });
