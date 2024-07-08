@@ -3,22 +3,22 @@ Getting Started
 Use the following commands to get started:
 
 # Install dependencies
-Use your favorite package manager to install dependencies. For example, with npm:
+Use your favorite package manager to install dependencies. For example, with bun:
 ```bash
-npm install
+bun install
 ```
 Initial building of assets
 ```bash
-npx mix
-npm run build:css
+bun mix
+bun purgecss.js
 ```
 #  Live Style Compiling
 Automatically compile selected stylesheets when changes are made to the source files.
 ```bash
-npm run mix:watch
+bun mix:watch
 ```
 # Live PHP Server
 Start a live PHP server on localhost:8000
 ```bash
-npm run php:live
+php -S localhost:3001
 ```
